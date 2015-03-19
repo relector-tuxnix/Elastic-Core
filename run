@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#deploy
+if [ -n "$1" ]; then
+
+	if [ ! -d "./sites/$1" ]; then
+
+		echo "Could not find site to deploy!"	
+		echo "Make sure it exists in the sites directory!"
+	
+	else
+
+		find live -not -path "live" -not -path "live/files*" -exec rm -r {} \; 2> /dev/null
+
+		touch ./live/ALL-CHANGES-WILL-BE-LOST-INSIDE-THIS-DIRECTORY
+
+		cp -r ./sites/elastic-core/* ./live
+		cp -r ./sites/$1/* ./live
+
+		echo "Deploy Completed!"
+		echo "Launching site..."
+
+		cd ./live
+
+		node index.js
+	fi
+
+else
+
+	echo "./run <site>"
+
+fi
