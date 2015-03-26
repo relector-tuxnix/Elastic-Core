@@ -46,16 +46,16 @@ A simple website core using in total.js and elastic-search. This just a base web
   
   $> npm install bcrypt-nodejs --save
   
-  $> npm install 
+  $> npm install handlebars --save
   
-  $> cd ../../
-  
-  $> ./run elastic-core
   
 ## Getting Started
 
+  * Enter the Elastic-Core project
+  $> cd ./Elastic-Core
+
   * Start Elastic Search
-  $> ./elastic
+  $> ./elasticsearch-1.5.0/bin/elasticsearch
 
   * Start Elastic-Core
-  $> nodejs 
+  $> ./run elastic-core
