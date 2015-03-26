@@ -52,10 +52,13 @@ A simple website core using in total.js and elastic-search. This just a base web
 ## Getting Started
 
   * Enter the Elastic-Core project
+
   $> cd ./Elastic-Core
 
   * Start Elastic Search
+  
   $> ./elasticsearch-1.5.0/bin/elasticsearch
 
   * Start Elastic-Core
+  
   $> ./run elastic-core
