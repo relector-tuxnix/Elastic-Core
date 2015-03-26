@@ -10,6 +10,7 @@ A simple website core using in total.js and elastic-search. This just a base web
 * [Total.js](https://www.totaljs.com)
 * [ElasticSearch.js](https://www.npmjs.com/package/bcrypt-nodejs)
 * [Handlebars.js](http://handlebarsjs.com/)
+* [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
 
 ## Linux Installation
 
@@ -42,6 +43,8 @@ Install the following node modules
     $> npm install bcrypt-nodejs --save
 
     $> npm install handlebars --save
+    
+    $> npm install handlebars-form-helpers --save
   
   
 ## Getting Started
