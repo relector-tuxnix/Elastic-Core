@@ -4,9 +4,6 @@ A simple website core using in total.js and elastic-search. This just a base web
 
 ## Requirements
 
-  * Total.js
-    * https://www.totaljs.com
-  
   * Node.js
     * https://nodejs.org/
   
@@ -14,8 +11,20 @@ A simple website core using in total.js and elastic-search. This just a base web
     * https://www.npmjs.com/
 
   * Elastic Search
-    *  https://www.elastic.co/downloads/elasticsearch
+    * https://www.elastic.co/downloads/elasticsearch
   
+  * Total.js
+    * https://www.totaljs.com
+  
+  * ElasticSearch.js
+    * https://github.com/elastic/elasticsearch-js
+
+  * bcrypt-nodejs
+    * https://www.npmjs.com/package/bcrypt-nodejs
+  
+  * Handlebars.js
+    * http://handlebarsjs.com/
+
 
 ## Linux Installation
 
@@ -31,7 +40,17 @@ A simple website core using in total.js and elastic-search. This just a base web
   
   $> cd sites/elastic-core/
   
-  $> 
+  $> npm install total.js --save
+  
+  $> npm install elasticsearch --save
+  
+  $> npm install bcrypt-nodejs --save
+  
+  $> npm install 
+  
+  $> cd ../../
+  
+  $> ./run elastic-core
   
 ## Getting Started
 
