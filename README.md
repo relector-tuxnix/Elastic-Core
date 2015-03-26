@@ -29,10 +29,6 @@ Extract ElasticSearch
 
     $> tar -zxf elasticsearch-1.5.0.tar.gz
 
-Delete the downloaded archive after it has be extracted 
-
-    $> rm elasticsearch-1.5.0.tar.gz
-
 Enter the Elastic-Core nodejs project
 
     $> cd sites/elastic-core/
