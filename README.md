@@ -2,6 +2,11 @@
 # Elastic-Core
 A simple website core using in total.js and elastic-search. This just a base website consisting of shared components that can be used to build bigger and better websites!
 
+## Releases
+
+* [Version 2015.03](https://github.com/neonnds/Elastic-Core/elastic-core-2015-03.tar.gz)
+
+
 ## Requirements
 
 * [Node.js](https://nodejs.org/)
