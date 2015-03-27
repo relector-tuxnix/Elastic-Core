@@ -1,0 +1,38 @@
+
+var definition = (function() {
+
+	/*
+		Response html
+		@contentBody {String}
+		@headers {Object} :: optional
+		return {Controller};
+	*/
+	Controller.prototype.html = function(contentBody, headers) {
+
+		var self = this;
+
+		return this.content(contentBody, "text/html", headers);
+	};
+
+	/*
+		Response view
+		@name {String}
+		return {String}; string is returned
+	*/
+	Controller.prototype.view = function(name) {
+		var self = this;
+
+		var filename = utils.combine(self.config['directory-views'], name + '.html');
+
+		var tmp = '';
+
+		if(fs.existsSync(filename))
+		    tmp = fs.readFileSync(filename).toString(ENCODING);
+
+		return tmp;
+	};
+});
+
+setTimeout(function() {
+	framework.eval(definition);
+}, 100);
