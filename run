@@ -10,7 +10,7 @@ if [ -n "$1" ]; then
 	
 	else
 
-		find live -not -path "live" -not -path "live/files*" -exec rm -r {} \; 2> /dev/null
+		find live -not -path "live" -not -path "live/files*" -not -path "live/.gitignore" -exec rm -r {} \; 2> /dev/null
 
 		touch ./live/ALL-CHANGES-WILL-BE-LOST-INSIDE-THIS-DIRECTORY
 
