@@ -1,5 +1,6 @@
+var $ = exports;
 
-exports.error = {
+$.error = {
 	uri: '/error',
 	label: 'Error Occured',
 	view: 'elastic-core/error',
@@ -7,57 +8,57 @@ exports.error = {
 	below: []
 };
 
-exports.error401 = {
+$.error401 = {
 	uri: '#401',
 	label: 'Unauthorized',
 };
 
-exports.error403 = {
+$.error403 = {
 	uri: '#403',
 	label: 'Forbidden',
 };
 
-exports.error404 = {
+$.error404 = {
 	uri: '#404',
 	label: 'Not Found',
 };
 
-exports.error408 = {
+$.error408 = {
 	uri: '#408',
 	label: 'Request Timeout',
 };
 
-exports.error431 = {
+$.error431 = {
 	uri: '#431',
 	label: 'Request Header Fields Too Large',
 }
 
-exports.error500 = {
+$.error500 = {
 	uri: '#500',
 	label: 'Internal Server Error',
 };
 
-exports.apiLogin = {
+$.apiLogin = {
 	uri: '/api/login',
 	label: 'API Login',
 };
 
-exports.apiLogout = {
+$.apiLogout = {
 	uri: '/api/logout',
 	label: 'API Logout',
 };
 
-exports.apiRegister = {
+$.apiRegister = {
 	uri: '/api/register',
 	label: 'API Register',
 };
 
-module.exports.apiSearch = {
+$.apiSearch = {
 	uri: '/api/search',
 	label: 'Search.',
 };
 
-exports.default = {
+$.default = {
 	uri: '/',
 	label: 'Elastic Core',
 	view: 'elastic-core/default',
@@ -65,10 +66,26 @@ exports.default = {
 	below: []
 };
 
-exports.home = {
+$.home = {
 	uri: '/',
 	label: 'Elastic Core Example Home Page',
 	view: 'elastic-core/home',
 	above: [],
 	below: []
 };
+
+$.login = {
+	uri: '/login',
+	label: 'Elastic Core Example Login Page',
+	view: 'elastic-core/login',
+	above: [],
+	below: []
+};
+
+$.logout = {
+	uri: '/logout',
+	label: 'Elastic Core Example Logout',
+	above: [],
+	below: []
+};
+

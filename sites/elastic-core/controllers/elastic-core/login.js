@@ -1,5 +1,5 @@
-var common = require('../../cloudboard/common.js')
-var pages = require('../../cloudboard/pages.js');
+var common = require('../../elastic-core/common.js')
+var pages = require('../../elastic-core/pages.js');
 
 exports.install = function(framework) {
 	framework.route(pages.login.uri, getLoginPage, ['unauthorize']);

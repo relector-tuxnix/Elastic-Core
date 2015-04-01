@@ -3,7 +3,7 @@ var pages = require('../../elastic-core/pages.js');
 
 exports.install = function(framework) {
 	framework.route(pages.apiLogin.uri, login, ['post', 'unauthorize']);
-	framework.route(pages.apiLogout.uri, logout, ['authorize']);
+	framework.route(pages.apiLogout.uri, logout, ['get', 'authorize']);
 	framework.route(pages.apiRegister.uri, register, ['post', 'unauthorize']);
 	framework.route(pages.apiSearch.uri, search, ['post']);
 };
