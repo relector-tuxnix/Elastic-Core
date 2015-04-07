@@ -12,12 +12,7 @@ function login()
 {
 	var self = this;
 
-	var post = {
-		"email" : self.post.email,
-		"password" : self.post.password
-	};
-
-	common.EBLogin(self, post, function(result) {
+	common.EBLogin(self, function(result) {
 
 		self.json(result);
 	});
@@ -27,13 +22,7 @@ function register()
 {
 	var self = this;
 
-	var post = {
-		"email" : self.post.email,
-		"password" : self.post.password,
-		"confirm" : self.post.confirmPassword
-	};
-
-	common.EBRegister(self, post, function(result) {
+	common.EBRegister(self, function(result) {
 
 		self.json(result);
 	});
@@ -52,14 +41,7 @@ function search()
 {
 	var self = this;
 
-	var query = self.post.query;
-	var last = self.post.last;
-	var fields = self.post["fields[]"];
-	var index = self.post.index;
-	var type = self.post.type;
-	var limit = self.post.limit;
-
-	common.EBSearch(self, query, last, fields, index, type, limit, function(results) {
+	common.EBSearch(self, function(results) {
 
 		if(results.success == false) {
 			

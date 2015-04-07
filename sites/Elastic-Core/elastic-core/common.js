@@ -4,14 +4,16 @@ var hbs = require('handlebars-form-helpers');
 var hbh = require('./helpers.js');
 var db = require('./database.js');
 
+var $ = module.exports;
+
 var defaultLimit = 50;
 
 hbs.register(hb);
 
-exports.model = {}
 
+$.model = {}
 
-exports.make = function(self, view) {
+$.make = function(self, view) {
 
 	var source = self.view(view);
 
@@ -24,13 +26,14 @@ exports.make = function(self, view) {
 	return out;
 };
 
-exports.EBLogin = function(self, post, callback) {
+$.EBLogin = function(self, callback) {
 
 	var auth = self.module('authorization');
+	
+	var id = self.post.email;
+	var password = self.post.password;
 
-	var user = { id: post.email, password: post.password };
-
-	auth.login(self, user, 1000, function(result) {
+	auth.login(self, {id: id, password: password}, 1000, function(result) {
 
 		if(result == false) {
 			callback({success: false, message: "Login failed."});
@@ -41,34 +44,38 @@ exports.EBLogin = function(self, post, callback) {
 	});
 };
 
-exports.EBLogout = function(self) {
+$.EBLogout = function(self) {
 
 	var auth = self.module('authorization');
 
 	auth.logoff(self, self.user.id);
 };
 
-exports.EBRegister = function(self, post, callback) {
+$.EBRegister = function(self, callback) {
 
 	var auth = self.module('authorization');
 
-	var email = post.email;
-	var password = post.password;
-	var confirm = post.confirm;
+	var email = self.post.email;
+	var password = self.post.password;
+	var confirm = self.post.confirmPassword;
+
+	console.log(self.post);
 
 	db.client.count({
 		index: 'users',
 		body: {
-			"query": {
-				"bool": {
-					"must": [
-						{ "match": { "id":  email }},
+			"filtered": {
+				"filter": {
+					"terms": [
+						{ "id":  email }
 					]
 				}
 			}
 
 		}
 	}, function (error, exists) {
+
+		console.log(exists);
 
 		if(exists.count > 0) {
 
@@ -87,10 +94,11 @@ exports.EBRegister = function(self, post, callback) {
 					db.client.index({
 						index: 'users',
 						type: 'user',
+						refresh: true,
 						body: {
 							id: email,
 							password: hash,
-							created: new Date().format('yyyy/MM/dd')
+							created: new Date()
 						}
 					}, function (err, response) {
 
@@ -109,8 +117,14 @@ exports.EBRegister = function(self, post, callback) {
 	});
 };
 
-exports.EBSearch = function(self, query, last, fields, index, type, limit, callback)
+$.EBSearch = function(self, callback)
 {
+	var query = self.post.query;
+	var last = self.post.last;
+	var fields = self.post["fields[]"];
+	var index = self.post.index;
+	var type = self.post.type;
+	var limit = self.post.limit;
 	var body = {};
 
 	console.log(fields);
@@ -192,5 +206,4 @@ exports.EBSearch = function(self, query, last, fields, index, type, limit, callb
 			callback({success: false, message: "An error has occurred."});
 		}
 	});
-}
-
+};

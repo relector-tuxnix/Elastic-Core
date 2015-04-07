@@ -23,7 +23,7 @@ client.indices.create({
 				"properties" : {
 					"id" : {"type" : "string", "index" : "analyzed", "null_value" : "na"},
 					"password" : {"type" : "string", "null_value" : "na"},
-					"created" : {"type" : "date", "format" : "yyyy/MM/dd", "index" : "analyzed", "null_value" : "na"}
+					"created" : {"type" : "date", "index" : "analyzed", "null_value" : "na"}
 				}
 			}
 		}
