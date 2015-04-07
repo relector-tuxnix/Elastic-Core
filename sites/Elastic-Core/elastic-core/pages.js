@@ -89,3 +89,10 @@ $.logout = {
 	below: []
 };
 
+$.register = {
+	uri: '/register',
+	label: 'Register',
+	view: 'elastic-core/register',
+	above: [],
+	below: []
+};
