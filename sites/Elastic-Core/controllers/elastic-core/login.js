@@ -29,12 +29,7 @@ function postLoginPage()
 {
 	var self = this;
 
-	var post = {
-		"email" : self.post.email,
-		"password" : self.post.password
-	};
-
-	common.EBLogin(self, post, function(result) {
+	common.EBLogin(self, function(result) {
 
 		if(result.success == false) {
 
