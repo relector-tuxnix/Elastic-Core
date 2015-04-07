@@ -33,7 +33,7 @@ Extract ElasticSearch
 
 Enter the Elastic-Core nodejs project
 
-    $> cd sites/elastic-core/
+    $> cd sites/Elastic-Core/
 
 Install the following node modules
 
@@ -57,4 +57,4 @@ Start Elastic Search
 
 Start Elastic-Core
 
-    $> ./run elastic-core
+    $> ./run Elastic-Core
