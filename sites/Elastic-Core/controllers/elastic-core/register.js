@@ -2,8 +2,11 @@ var common = require('../../elastic-core/common.js')
 var pages = require('../../elastic-core/pages.js');
 
 exports.install = function(framework) {
-	framework.route(pages.register.uri, getRegisterPage, ['unauthorize']);
-	framework.route(pages.register.uri, postRegisterPage, ['unauthorize', 'post']);
+
+	if(pages.register.active) {
+		framework.route(pages.register.uri, getRegisterPage, ['unauthorize']);
+		framework.route(pages.register.uri, postRegisterPage, ['unauthorize', 'post']);
+	}
 };
 
 // GET Register Page
