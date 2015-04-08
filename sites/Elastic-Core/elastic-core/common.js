@@ -59,25 +59,18 @@ $.EBRegister = function(self, callback) {
 	var password = self.post.password;
 	var confirm = self.post.confirmPassword;
 
-	console.log(self.post);
-
 	db.client.count({
 		index: 'users',
 		body: {
-			"filtered": {
-				"filter": {
-					"terms": [
-						{ "id":  email }
-					]
+			"query" : {
+				"term": {
+					"id" : email
 				}
 			}
-
 		}
-	}, function (error, exists) {
+	}, function (err, exists) {
 
-		console.log(exists);
-
-		if(exists.count > 0) {
+		if(err != null || exists.count > 0) {
 
 			callback({success: false, message: "Username already exists."});
 
@@ -87,6 +80,7 @@ $.EBRegister = function(self, callback) {
 
 				if(err != null) {
 
+					console.log(err);
 					callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
 		
 				} else {
@@ -108,6 +102,7 @@ $.EBRegister = function(self, callback) {
 							
 						} else {
 
+							console.log(err);
 							callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
 						}
 					});
