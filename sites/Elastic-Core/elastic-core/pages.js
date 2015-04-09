@@ -10,52 +10,53 @@ $.error = {
 
 $.error401 = {
 	uri: '#401',
-	label: 'Unauthorized',
+	label: 'Unauthorized'
 };
 
 $.error403 = {
 	uri: '#403',
-	label: 'Forbidden',
+	label: 'Forbidden'
 };
 
 $.error404 = {
 	uri: '#404',
-	label: 'Not Found',
+	label: 'Not Found'
 };
 
 $.error408 = {
 	uri: '#408',
-	label: 'Request Timeout',
+	label: 'Request Timeout'
 };
 
 $.error431 = {
 	uri: '#431',
-	label: 'Request Header Fields Too Large',
+	label: 'Request Header Fields Too Large'
 }
 
 $.error500 = {
 	uri: '#500',
-	label: 'Internal Server Error',
+	label: 'Internal Server Error'
 };
 
 $.apiLogin = {
 	uri: '/api/login',
-	label: 'API Login',
+	label: 'API Login'
 };
 
 $.apiLogout = {
 	uri: '/api/logout',
-	label: 'API Logout',
+	label: 'API Logout'
 };
 
 $.apiRegister = {
 	uri: '/api/register',
 	label: 'API Register',
+	active: true
 };
 
 $.apiSearch = {
 	uri: '/api/search',
-	label: 'Search.',
+	label: 'Search.'
 };
 
 $.default = {
@@ -93,6 +94,7 @@ $.register = {
 	uri: '/register',
 	label: 'Register',
 	view: 'elastic-core/register',
+	active: true,
 	above: [],
 	below: []
 };
