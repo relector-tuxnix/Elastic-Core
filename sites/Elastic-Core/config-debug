@@ -1,6 +1,8 @@
 name                       	: Elastic Core (DEBUG)
 version                    	: 1.00
 secret                    	: elastic-core-1.00
+default-ip       		: 127.0.0.1
+default-port     		: 8000
 etag-version               	:
 directory-contents		: /assets/
 directory-controllers		: /controllers/
