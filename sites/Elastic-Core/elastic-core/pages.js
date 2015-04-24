@@ -59,6 +59,11 @@ $.apiSearch = {
 	label: 'Search.'
 };
 
+$.apiSetLanguage = {
+	uri: '/api/setlanguage',
+	label: 'Set Language',
+}
+
 $.default = {
 	uri: '/',
 	label: 'Elastic Core',

@@ -10,7 +10,6 @@ var defaultLimit = 50;
 
 hbs.register(hb);
 
-
 $.model = {}
 
 $.make = function(self, view) {
@@ -20,6 +19,8 @@ $.make = function(self, view) {
 	var template = hb.compile(source);
 
 	exports.model.user = self.user;
+
+	self.locale('elastic-core/en_US', 'hello');
 
 	var out = template(exports.model); 
 

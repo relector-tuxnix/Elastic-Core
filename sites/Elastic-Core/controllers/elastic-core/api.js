@@ -10,6 +10,7 @@ exports.install = function(framework) {
 	}
 
 	framework.route(pages.apiSearch.uri, search, ['post']);
+	framework.route(pages.apiSetLanguage.uri, setLanguage, ['post']);
 };
 
 function login()
@@ -56,4 +57,11 @@ function search()
 			self.json(results);
 		}
 	});
+}
+
+function setLanguage()
+{
+	var self = this;
+
+	common.model.lang = self.post.lang;
 }
