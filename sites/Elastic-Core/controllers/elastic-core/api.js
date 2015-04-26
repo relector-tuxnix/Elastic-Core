@@ -63,5 +63,5 @@ function setLanguage()
 {
 	var self = this;
 
-	common.model.lang = self.post.lang;
+	common.lang = self.post.lang;
 }

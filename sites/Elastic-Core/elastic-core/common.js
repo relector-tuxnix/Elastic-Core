@@ -1,16 +1,46 @@
+var framework = require('total.js');
+var fs = require('fs');
 var hb = require('handlebars');
 var hbs = require('handlebars-form-helpers');
 
 var hbh = require('./helpers.js');
 var db = require('./database.js');
 
-var $ = module.exports;
-
-var defaultLimit = 50;
-
 hbs.register(hb);
 
+var $ = module.exports;
+
 $.model = {}
+
+$.lang = framework.config['default-language'];
+
+$.locales = null;
+
+
+$.locale = function(keyword) {
+
+	if($.locales == null) {
+
+		var tmp = '';
+
+		var filename = utils.combine(framework.config['directory-locale'], $.lang + '.json');
+
+		if(fs.existsSync(filename) == true) {
+
+			tmp = fs.readFileSync(filename);
+		}
+
+		if(tmp == '') {
+			$.lang = framework.config['default-language'];
+
+			return '';
+		}
+
+		$.locales = JSON.parse(tmp);
+	}
+
+	return $.locales[keyword] || ''; 
+}
 
 $.make = function(self, view) {
 
@@ -18,11 +48,11 @@ $.make = function(self, view) {
 
 	var template = hb.compile(source);
 
-	exports.model.user = self.user;
+	$.model.user = self.user;
+	
+	$.model.locale = $.locale;
 
-	self.locale('elastic-core/en_US', 'hello');
-
-	var out = template(exports.model); 
+	var out = template($.model); 
 
 	return out;
 };
@@ -168,9 +198,8 @@ $.EBSearch = function(self, callback)
 	}
 
 	//Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > defaultLimit) {
-
-                limit = defaultLimit;
+        if(limit < 1 || limit > framework.config['default-item-limit']) {
+		limit = framework.config['default-item-limit'];
         } 
 
 	console.log(body);

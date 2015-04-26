@@ -1,0 +1,5 @@
+{
+	"hi" : "Aie",
+	"howdy" : "Greetings",
+	"hello" : "Good day {{name}}"
+}

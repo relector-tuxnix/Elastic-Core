@@ -13,6 +13,7 @@ function getHomePage()
 	common.model = {};
 	common.model.pages = pages;
 	common.model.page = pages.home;
+	common.model.hi = common.locale('howdy');
 	common.model.body = common.make(self, pages.home.view);
 
 	var page = common.make(self, pages.default.view);
