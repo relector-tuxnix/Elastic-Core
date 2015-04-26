@@ -10,6 +10,8 @@ hbs.register(hb);
 
 var $ = module.exports;
 
+var defaultLimit = framework.config['default-item-limit'];
+
 $.model = {}
 
 $.lang = framework.config['default-language'];
@@ -27,7 +29,7 @@ $.locale = function(keyword) {
 
 		if(fs.existsSync(filename) == true) {
 
-			tmp = fs.readFileSync(filename);
+			tmp = fs.readFileSync(filename, 'utf-8');
 		}
 
 		if(tmp == '') {
@@ -198,8 +200,8 @@ $.EBSearch = function(self, callback)
 	}
 
 	//Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > framework.config['default-item-limit']) {
-		limit = framework.config['default-item-limit'];
+        if(limit < 1 || limit > defaultLimit) {
+		limit = defaultLimit;
         } 
 
 	console.log(body);
