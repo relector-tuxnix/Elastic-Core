@@ -3,7 +3,10 @@ var $ = exports;
 $.error = {
 	uri: '/error',
 	label: 'Error Occured',
-	view: 'elastic-core/error',
+	views: [
+		{'default' : 'elastic-core/error'}
+	],
+	options: [],
 	above: [],
 	below: []
 };
@@ -40,34 +43,42 @@ $.error500 = {
 
 $.apiLogin = {
 	uri: '/api/login',
+	options: ['post', 'unauthorize'],
 	label: 'API Login'
 };
 
 $.apiLogout = {
 	uri: '/api/logout',
+	options: ['get', 'authorize'],
 	label: 'API Logout'
 };
 
 $.apiRegister = {
 	uri: '/api/register',
+	options: ['post', 'unauthorize'],
 	label: 'API Register',
 	active: true
 };
 
 $.apiSearch = {
 	uri: '/api/search',
+	options: ['post'],
 	label: 'Search.'
 };
 
 $.apiSetLanguage = {
 	uri: '/api/setlanguage',
+	options: ['post'],
 	label: 'Set Language',
 }
 
 $.default = {
 	uri: '/',
+	options: [],
 	label: 'Elastic Core',
-	view: 'elastic-core/default',
+	views: [
+		{'default' : 'elastic-blog/default.html'}
+	],
 	above: [],
 	below: []
 };
@@ -75,21 +86,29 @@ $.default = {
 $.home = {
 	uri: '/',
 	label: 'Elastic Core Example Home Page',
-	view: 'elastic-core/home',
+	views: [
+		{'default' : 'elastic-blog/home.html'}
+	],
+	options: ['unauthorize'],
 	above: [],
 	below: []
 };
 
 $.login = {
 	uri: '/login',
+	options: ['unauthorize', 'get'],
+	postOptions: ['unauthorize', 'post'],
 	label: 'Elastic Core Example Login Page',
-	view: 'elastic-core/login',
+	views: [
+		{'default' : 'elastic-blog/login.html'}
+	],
 	above: [],
 	below: []
 };
 
 $.logout = {
 	uri: '/logout',
+	options: ['authorize'],
 	label: 'Elastic Core Example Logout',
 	above: [],
 	below: []
@@ -97,8 +116,12 @@ $.logout = {
 
 $.register = {
 	uri: '/register',
+	options: ['unauthorize'],
+	postOptions: ['unauthorize', 'post'],
 	label: 'Register',
-	view: 'elastic-core/register',
+	views: [
+		{'default' : 'elastic-blog/register.html'}
+	],
 	active: true,
 	above: [],
 	below: []

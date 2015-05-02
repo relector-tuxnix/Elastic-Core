@@ -44,17 +44,35 @@ $.locale = function(keyword) {
 	return $.locales[keyword] || ''; 
 }
 
-$.make = function(self, view) {
+$.make = function(self, views) {
 
-	var source = self.view(view);
-
-	var template = hb.compile(source);
+	var out = "";
 
 	$.model.user = self.user;
 	
 	$.model.locale = $.locale;
 
-	var out = template($.model); 
+	for(var i = 0; i < views.length; i++) {
+
+		var item = views[i];
+
+		var modelKey = Object.keys(item)[0];
+		var view = item[modelKey];
+
+		var source = self.view(view);
+
+		var template = hb.compile(source);
+
+		//Last view is our final view
+		if(i == views.length - 1) {
+
+			out = template($.model);
+
+		} else {
+
+			$.model[modelKey] = template($.model);
+		}
+	}
 
 	return out;
 };
@@ -147,6 +165,7 @@ $.EBRegister = function(self, callback) {
 
 $.EBSearch = function(self, callback)
 {
+	console.log("HERE");
 	var query = self.post.query;
 	var last = self.post.last;
 	var fields = self.post["fields[]"];
@@ -154,8 +173,6 @@ $.EBSearch = function(self, callback)
 	var type = self.post.type;
 	var limit = self.post.limit;
 	var body = {};
-
-	console.log(fields);
 
 	/*
 	body.query = { 
@@ -203,8 +220,6 @@ $.EBSearch = function(self, callback)
         if(limit < 1 || limit > defaultLimit) {
 		limit = defaultLimit;
         } 
-
-	console.log(body);
 
 	db.client.search({
 		index: index,

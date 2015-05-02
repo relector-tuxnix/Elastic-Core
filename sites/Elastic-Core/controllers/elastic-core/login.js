@@ -2,9 +2,9 @@ var common = require('../../elastic-core/common.js')
 var pages = require('../../elastic-core/pages.js');
 
 exports.install = function(framework) {
-	framework.route(pages.login.uri, getLoginPage, ['unauthorize']);
-	framework.route(pages.login.uri, postLoginPage, ['unauthorize', 'post']);
-	framework.route(pages.logout.uri, getLogoutPage, ['authorize']);
+	framework.route(pages.login.uri, getLoginPage, pages.login.options);
+	framework.route(pages.login.uri, postLoginPage, pages.login.postOptions);
+	framework.route(pages.logout.uri, getLogoutPage, pages.logout.options);
 };
 
 // GET Login Page
@@ -17,9 +17,8 @@ function getLoginPage()
 	common.model.page = pages.login;
 	common.model.message = '';
 	common.model.email = '';
-	common.model.body = common.make(self, pages.login.view);
 
-	var page = common.make(self, pages.default.view);
+	var page = common.make(self, pages.login.views);
 
 	self.html(page);
 }
@@ -35,9 +34,8 @@ function postLoginPage()
 
 			common.model.message = "Invalid username or password.";
 			common.model.email = self.post.email;
-			common.model.body = common.make(self, pages.login.view);
 
-			var page = common.make(self, pages.default.view);			
+			var page = common.make(self, pages.login.views);			
 
 			self.html(page);
 

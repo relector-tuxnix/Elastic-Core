@@ -85,9 +85,7 @@ function error(self, code)
 			common.model.message = self.exception;
 		}
 
-		common.model.body = common.make(self, pages.error.view);
-
-		var page = common.make(self, pages.default.view);
+		var page = common.make(self, pages.error.views);
 
 		self.html(page);
 	}

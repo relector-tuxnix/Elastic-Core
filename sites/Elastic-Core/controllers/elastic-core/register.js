@@ -4,8 +4,8 @@ var pages = require('../../elastic-core/pages.js');
 exports.install = function(framework) {
 
 	if(pages.register.active) {
-		framework.route(pages.register.uri, getRegisterPage, ['unauthorize']);
-		framework.route(pages.register.uri, postRegisterPage, ['unauthorize', 'post']);
+		framework.route(pages.register.uri, getRegisterPage, pages.register.options);
+		framework.route(pages.register.uri, postRegisterPage, pages.register.postOptions);
 	}
 };
 
@@ -19,9 +19,8 @@ function getRegisterPage()
 	common.model.page = pages.register;
 	common.model.message = '';
 	common.model.email = '';
-	common.model.body = common.make(self, pages.register.view);
 
-	var page = common.make(self, pages.default.view);
+	var page = common.make(self, pages.register.views);
 
 	self.html(page);
 }
@@ -33,8 +32,6 @@ function postRegisterPage()
 
 	common.EBRegister(self, function(result) {
 
-		console.log(result);
-
 		if(result.success == true) {
 
 			self.redirect(pages.login.uri);
@@ -43,9 +40,8 @@ function postRegisterPage()
 
 			common.model.message = result.message;
 			common.model.email = self.post.email;
-			common.model.body = common.make(self, pages.register.view);
 
-			var page = common.make(self, pages.default.view);
+			var page = common.make(self, pages.register.views);
 
 			self.html(page)
 		}	

@@ -2,7 +2,7 @@ var common = require('../../elastic-core/common.js');
 var pages = require('../../elastic-core/pages.js');
 
 exports.install = function(framework) {
-	framework.route(pages.home.uri, getHomePage, ['unauthorize']);
+	framework.route(pages.home.uri, getHomePage, pages.home.options);
 };
 
 // GET Home Page
@@ -14,9 +14,8 @@ function getHomePage()
 	common.model.pages = pages;
 	common.model.page = pages.home;
 	common.model.hi = common.locale('howdy');
-	common.model.body = common.make(self, pages.home.view);
 
-	var page = common.make(self, pages.default.view);
+	var page = common.make(self, pages.home.views);
 
 	self.html(page);
 }

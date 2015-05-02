@@ -22,7 +22,7 @@ var definition = (function() {
 	Controller.prototype.view = function(name) {
 		var self = this;
 
-		var filename = utils.combine(self.config['directory-views'], name + '.html');
+		var filename = utils.combine(self.config['directory-views'], name);
 
 		var tmp = '';
 
