@@ -84,7 +84,7 @@ $.EBLogin = function(self, callback) {
 	var id = self.post.email;
 	var password = self.post.password;
 
-	auth.login(self, {id: id, password: password}, 1000, function(result) {
+	auth.login(self, {id: id, password: password}, function(result) {
 
 		if(result == false) {
 			callback({success: false, message: "Login failed."});

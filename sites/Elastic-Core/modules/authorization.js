@@ -88,12 +88,9 @@ Users.prototype._onAuthorization = function(req, res, flags, callback) {
 	@expire {Number} :: expire in minutes
 	return {Users}
 */
-Users.prototype.login = function(controller, user, expire, callback) {
+Users.prototype.login = function(controller, user, callback) {
 
 	var self = this;
-
-	if(typeof(expire) !== 'number')
-		expire = null;
 
 	self.onAuthorization(user, function(user) {
 
@@ -102,7 +99,7 @@ Users.prototype.login = function(controller, user, expire, callback) {
 			var agent = controller.req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '');
 			var uniqueKey = user.id + "," + ip + "," + agent;
 			
-			self.users[uniqueKey] = { user: user, expire: new Date().add('m', expire || self.options.expireSession) };
+			self.users[uniqueKey] = { user: user, expire: new Date().add('m', self.options.expireSession) };
 
 			controller.req.user = user;
 		
