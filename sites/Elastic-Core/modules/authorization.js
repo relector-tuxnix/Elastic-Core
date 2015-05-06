@@ -8,7 +8,7 @@ var USERAGENT = 20;
 // expireSession in minutes
 
 function Users() {
-	this.options = { cookie: '__user', secret: 'AbcUASOU389ASDadsl', expireSession: 10, expireCookie: 10 };
+	this.options = { cookie: '__user', secret: 'AbcUASOU389ASDadsl', expireSession: 60, expireCookie: 7 };
 	this.framework = null;
 	this.online = 0;
 	this.users = {};
@@ -197,6 +197,7 @@ Users.prototype._writeOK = function(id, req, res) {
 	var value = id + '|' + SUGAR;
 
 	res.cookie(self.options.cookie, framework.encrypt(value, self.options.secret), new Date().add('d', self.options.expireCookie));
+
 	return this;
 };
 
