@@ -72,17 +72,6 @@ $.apiSetLanguage = {
 	label: 'Set Language',
 }
 
-$.default = {
-	uri: '/',
-	options: [],
-	label: 'Elastic Core',
-	views: [
-		{'default' : 'elastic-blog/default.html'}
-	],
-	above: [],
-	below: []
-};
-
 $.home = {
 	uri: '/',
 	label: 'Elastic Core Example Home Page',
