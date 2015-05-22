@@ -10,12 +10,26 @@ if [ -n "$1" ]; then
 	
 	else
 
-		cp -r ./sites/Elastic-Core/assets ./live
-		cp -r ./sites/$1/assets ./live
+		#Redeploy any changes to sites/$1
+		last=`du -shb ./sites/$1/assets`
 
-		echo "Assets Updated!"
+		while [ "true" ]
+		do
+			first=`du -shb ./sites/$1/assets`
+
+			if [ "$first" != "$last" ]
+			then
+				cp -r ./sites/Elastic-Core/assets ./live
+				cp -r ./sites/$1/assets ./live
+
+				last=$first
+	
+				echo "Assets Updated!"
+			fi
+
+			sleep 2
+		done
 	fi
-
 else
 
 	echo "./update <site>"
