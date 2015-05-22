@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#update
+if [ -n "$1" ]; then
+
+	if [ ! -d "./sites/$1" ]; then
+
+		echo "Could not find site to update!"	
+		echo "Make sure it exists in the sites directory!"
+	
+	else
+
+		cp -r ./sites/Elastic-Core/assets ./live
+		cp -r ./sites/$1/assets ./live
+
+		echo "Assets Updated!"
+	fi
+
+else
+
+	echo "./update <site>"
+
+fi
