@@ -19,6 +19,7 @@ if [ -n "$1" ]; then
 
 			if [ "$first" != "$last" ]
 			then
+				rm -r ./live/assets
 				cp -r ./sites/Elastic-Core/assets ./live
 				cp -r ./sites/$1/assets ./live
 
