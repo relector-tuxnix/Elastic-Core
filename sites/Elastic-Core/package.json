@@ -1,0 +1,20 @@
+{
+  "name": "Elastic-Core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "elasticsearch": "^10.0.1",
+    "handlebars": "^4.0.5",
+    "handlebars-form-helpers": "^0.1.3",
+    "total.js": "^1.9.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
