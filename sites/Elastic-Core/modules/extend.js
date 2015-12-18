@@ -26,13 +26,14 @@ var definition = (function() {
 
 		var tmp = '';
 
-		if(fs.existsSync(filename))
+		if(fs.existsSync(filename)) {
 		    tmp = fs.readFileSync(filename).toString(ENCODING);
+		}
 
 		return tmp;
 	};
 });
 
 setTimeout(function() {
-	framework.eval(definition);
+	F.eval(definition);
 }, 100);

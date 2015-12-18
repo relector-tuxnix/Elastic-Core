@@ -1,11 +1,11 @@
 var common = require('../../elastic-core/common.js')
 var pages = require('../../elastic-core/pages.js');
 
-exports.install = function(framework) {
+exports.install = function() {
 
 	if(pages.register.active) {
-		framework.route(pages.register.uri, getRegisterPage, pages.register.options);
-		framework.route(pages.register.uri, postRegisterPage, pages.register.postOptions);
+		F.route(pages.register.uri, getRegisterPage, pages.register.options);
+		F.route(pages.register.uri, postRegisterPage, pages.register.postOptions);
 	}
 };
 

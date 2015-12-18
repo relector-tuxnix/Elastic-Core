@@ -1,16 +1,16 @@
 var common = require('../../elastic-core/common.js');
 var pages = require('../../elastic-core/pages.js');
 
-exports.install = function(framework) {
-	framework.route(pages.apiLogin.uri, login, pages.apiLogin.options);
-	framework.route(pages.apiLogout.uri, logout, pages.apiLogout.options);
+exports.install = function() {
+	F.route(pages.apiLogin.uri, login, pages.apiLogin.options);
+	F.route(pages.apiLogout.uri, logout, pages.apiLogout.options);
 
 	if(pages.apiRegister.active) {
-		framework.route(pages.apiRegister.uri, register, pages.apiRegister.options);
+		F.route(pages.apiRegister.uri, register, pages.apiRegister.options);
 	}
 
-	framework.route(pages.apiSearch.uri, search, pages.apiSearch.options);
-	framework.route(pages.apiSetLanguage.uri, setLanguage, pages.apiSearch.options);
+	F.route(pages.apiSearch.uri, search, pages.apiSearch.options);
+	F.route(pages.apiSetLanguage.uri, setLanguage, pages.apiSearch.options);
 };
 
 function login()

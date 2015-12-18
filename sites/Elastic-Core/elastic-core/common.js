@@ -1,4 +1,4 @@
-var framework = require('total.js');
+var F = require('total.js');
 var fs = require('fs');
 var hb = require('handlebars');
 var hbs = require('handlebars-form-helpers');
@@ -10,11 +10,11 @@ hbs.register(hb);
 
 var $ = module.exports;
 
-var defaultLimit = framework.config['default-item-limit'];
+var defaultLimit = F.config['default-item-limit'];
 
 $.model = {}
 
-$.lang = framework.config['default-language'];
+$.lang = F.config['default-language'];
 
 $.locales = null;
 
@@ -25,7 +25,7 @@ $.locale = function(keyword) {
 
 		var tmp = '';
 
-		var filename = utils.combine(framework.config['directory-locale'], $.lang + '.json');
+		var filename = utils.combine(F.config['directory-locale'], $.lang + '.json');
 
 		if(fs.existsSync(filename) == true) {
 
@@ -33,7 +33,7 @@ $.locale = function(keyword) {
 		}
 
 		if(tmp == '') {
-			$.lang = framework.config['default-language'];
+			$.lang = F.config['default-language'];
 
 			return '';
 		}
@@ -57,6 +57,7 @@ $.make = function(self, views) {
 		var item = views[i];
 
 		var modelKey = Object.keys(item)[0];
+
 		var view = item[modelKey];
 
 		var source = self.view(view);
@@ -131,10 +132,11 @@ $.EBRegister = function(self, callback) {
 
 				if(err != null) {
 
-					console.log(err);
 					callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
 		
 				} else {
+
+					var timestamp = new Date().format('yyyy/MM/dd');
 
 					db.client.index({
 						index: 'users',
@@ -143,7 +145,8 @@ $.EBRegister = function(self, callback) {
 						body: {
 							id: email,
 							password: hash,
-							created: new Date()
+							updated: timestamp,
+							created: timestamp
 						}
 					}, function (err, response) {
 
@@ -153,7 +156,6 @@ $.EBRegister = function(self, callback) {
 							
 						} else {
 
-							console.log(err);
 							callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
 						}
 					});
@@ -165,7 +167,6 @@ $.EBRegister = function(self, callback) {
 
 $.EBSearch = function(self, callback)
 {
-	console.log("HERE");
 	var query = self.post.query;
 	var last = self.post.last;
 	var fields = self.post["fields[]"];
@@ -173,6 +174,8 @@ $.EBSearch = function(self, callback)
 	var type = self.post.type;
 	var limit = self.post.limit;
 	var body = {};
+
+	console.log(fields);
 
 	/*
 	body.query = { 

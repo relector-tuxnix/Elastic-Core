@@ -14,8 +14,8 @@ directory-public             	: /assets/static/
 directory-modules             	: /modules/
 directory-logs                  : /logs/
 static-url                      :
-static-url-js                   : /scripts/
-static-url-css                  : /styles/
+static-url-script               : /scripts/
+static-url-style                : /styles/
 static-url-image             	: /images/
 static-url-video             	: /videos/
 static-url-font                 : /fonts/

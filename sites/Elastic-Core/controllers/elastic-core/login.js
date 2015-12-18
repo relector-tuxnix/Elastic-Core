@@ -1,10 +1,10 @@
 var common = require('../../elastic-core/common.js')
 var pages = require('../../elastic-core/pages.js');
 
-exports.install = function(framework) {
-	framework.route(pages.login.uri, getLoginPage, pages.login.options);
-	framework.route(pages.login.uri, postLoginPage, pages.login.postOptions);
-	framework.route(pages.logout.uri, getLogoutPage, pages.logout.options);
+exports.install = function() {
+	F.route(pages.login.uri, getLoginPage, pages.login.options);
+	F.route(pages.login.uri, postLoginPage, pages.login.postOptions);
+	F.route(pages.logout.uri, getLogoutPage, pages.logout.options);
 };
 
 // GET Login Page

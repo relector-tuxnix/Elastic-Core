@@ -1,7 +1,6 @@
 var elasticsearch = require('elasticsearch');
 
-// Connect the client to two nodes, requests will be
-// load-balanced between them using round-robin
+/* Connect the client to two nodes, requests will be load-balanced between them using round-robin */
 var client = elasticsearch.Client({
 	hosts: ['localhost:9200']
 });
@@ -15,15 +14,11 @@ client.indices.create({
 	body : {
 		"mappings" : {
 			"user" : {
-				_id : {
-					"path" : "id",
-					"store" : "true",
-					"index": "analyzed"
-				},
 				"properties" : {
 					"id" : {"type" : "string", "index" : "analyzed", "null_value" : "na"},
 					"password" : {"type" : "string", "null_value" : "na"},
-					"created" : {"type" : "date", "index" : "analyzed", "null_value" : "na"}
+					"updated" : {"type" : "date", "format" : "yyyy/MM/dd", "index" : "analyzed", "null_value" : "now"},
+					"created" : {"type" : "date", "format" : "yyyy/MM/dd", "index" : "analyzed", "null_value" : "now"}
 				}
 			}
 		}

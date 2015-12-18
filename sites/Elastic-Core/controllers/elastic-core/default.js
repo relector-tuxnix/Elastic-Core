@@ -5,13 +5,13 @@ var pages = require('../../elastic-core/pages.js');
 //API Agent = "Mozilla/5.0 (API; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
 //WEB Agent = "Mozilla/5.0 (X11; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
 
-exports.install = function(framework) {
-    framework.route(pages.error401.uri, error401);
-    framework.route(pages.error403.uri, error403);
-    framework.route(pages.error404.uri, error404);
-    framework.route(pages.error408.uri, error408);
-    framework.route(pages.error431.uri, error431);
-    framework.route(pages.error500.uri, error500);
+exports.install = function() {
+    F.route(pages.error401.uri, error401);
+    F.route(pages.error403.uri, error403);
+    F.route(pages.error404.uri, error404);
+    F.route(pages.error408.uri, error408);
+    F.route(pages.error431.uri, error431);
+    F.route(pages.error500.uri, error500);
 };
 
 

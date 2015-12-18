@@ -1,8 +1,8 @@
-var framework = require('total.js');
+var F = require('total.js');
 var http = require('http');
 var db = require('./elastic-core/database.js');
 
-framework.once('load', function() {
+F.once('load', function() {
     
 	var self = this;
 
@@ -53,6 +53,6 @@ framework.once('load', function() {
 	};
 });
 
-framework.http('debug');
+F.http('debug');
 
 console.log('****** Started ******');

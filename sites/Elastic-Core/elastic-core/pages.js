@@ -76,9 +76,9 @@ $.home = {
 	uri: '/',
 	label: 'Elastic Core Example Home Page',
 	views: [
-		{'default' : 'elastic-blog/home.html'}
+		{'default' : 'elastic-core/home.html'}
 	],
-	options: ['unauthorize'],
+	options: [],
 	above: [],
 	below: []
 };
@@ -89,7 +89,7 @@ $.login = {
 	postOptions: ['unauthorize', 'post'],
 	label: 'Elastic Core Example Login Page',
 	views: [
-		{'default' : 'elastic-blog/login.html'}
+		{'default' : 'elastic-core/login.html'}
 	],
 	above: [],
 	below: []
@@ -109,7 +109,7 @@ $.register = {
 	postOptions: ['unauthorize', 'post'],
 	label: 'Register',
 	views: [
-		{'default' : 'elastic-blog/register.html'}
+		{'default' : 'elastic-core/register.html'}
 	],
 	active: true,
 	above: [],

@@ -231,7 +231,7 @@ Users.prototype.comparePassword = bcrypt.compare;
 
 module.exports = new Users();
 
-module.exports.install = function(framework) {
+module.exports.install = function() {
 
 	SUGAR = (framework.config.name + framework.config.version + SUGAR).replace(/\s/g, '');
 

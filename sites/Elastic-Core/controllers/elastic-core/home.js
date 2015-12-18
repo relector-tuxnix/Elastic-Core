@@ -1,8 +1,8 @@
 var common = require('../../elastic-core/common.js');
 var pages = require('../../elastic-core/pages.js');
 
-exports.install = function(framework) {
-	framework.route(pages.home.uri, getHomePage, pages.home.options);
+exports.install = function() {
+	F.route(pages.home.uri, getHomePage, pages.home.options);
 };
 
 // GET Home Page
