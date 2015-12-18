@@ -25,11 +25,11 @@ Enter the Elastic-Core project
 
 Get ElasticSearch from the offical site
 
-    $> wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.5.0.tar.gz
+    $> wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-2.1.0.tar.gz
 
 Extract ElasticSearch
 
-    $> tar -zxf elasticsearch-1.5.0.tar.gz
+    $> tar -zxf elasticsearch-2.1.0.tar.gz
 
 Enter the Elastic-Core nodejs project
 
@@ -53,7 +53,7 @@ Enter the Elastic-Core project
 
 Start Elastic Search
 
-    $> ./elasticsearch-1.5.0/bin/elasticsearch
+    $> ./elasticsearch-2.1.0/bin/elasticsearch
 
 Start Elastic-Core
 
