@@ -141,6 +141,7 @@ $.EBRegister = function(self, callback) {
 					db.client.index({
 						index: 'users',
 						type: 'user',
+						id: email,
 						refresh: true,
 						body: {
 							id: email,
