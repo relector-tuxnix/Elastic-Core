@@ -2,6 +2,49 @@ var $ = exports;
 
 var common = require('../../elastic-core/common.js');
 
+
+$.apiGetById = function() {
+
+	var self = this;
+
+	var id = self.post.id;
+       	var index = self.post.index;
+        var type = self.post.type;
+
+	common.EBGetById(self, id, index, type, function(results) {
+
+		if(results.success == false) {
+			
+			self.view500(results.message);
+			
+		} else {
+
+			self.json(results.message);
+		}
+	});
+};
+
+$.apiDeleteById = function() {
+
+	var self = this;
+
+	var id = self.post.id;
+	var index = self.post.index;
+	var type = self.post.type;
+
+	common.EBDelete(self, id, index, type, function(results) {
+
+		if(results.success == false) {
+	
+			self.view500(results.message);
+
+		} else {
+
+			self.json(results);
+		}
+	});
+};
+
 $.apiLogin = function() {
 
 	var self = this;

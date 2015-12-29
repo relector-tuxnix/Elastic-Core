@@ -169,6 +169,48 @@ $.make = function(self, page) {
 	return out;
 };
 
+$.EBGetById = function(self, id, index, type, callback)
+{
+	var body = {};
+
+	db.client.get({
+		index: index,
+		type: type,
+		size: 1,
+		id: id
+	}, function (error, response) {
+
+		if(error == null && response != null && response._source !=  null) {
+
+			callback({success: true, message: response._source}); 
+
+		} else {
+
+			callback({success: false, message: "An error has occurred."});
+		}
+	});	
+};
+
+$.EBDelete = function(self, id, index, type, callback)
+{
+	db.client.delete({
+		index: index,
+		type: type,
+		id: id,
+		refresh: true
+	}, function (err, response) {
+
+		if(err == null) {
+
+			callback({success: true, message: "Deleted."});
+
+		} else {
+
+			callback({success: false, message: "Failed to delete."});
+		}
+	});
+};
+
 $.EBLogin = function(self, callback) {
 
 	var auth = self.module('authorization');

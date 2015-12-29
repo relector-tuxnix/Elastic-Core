@@ -48,6 +48,20 @@ $.error500 = {
 	label: 'Internal Server Error'
 };
 
+$.apiGetById = {
+	uri: '/api/get-by-id',
+	controller: 'elastic-core/api.js',
+	flags: ['post'],
+	label: 'API Get By ID'
+};
+
+$.apiDeleteById = {
+	uri: '/api/delete',
+	controller: 'elastic-core/api.js',
+	flags: ['post', 'authorize'],
+	label: 'API Delete By ID.'
+};
+
 $.apiLogin = {
 	uri: '/api/login',
 	controller: 'elastic-core/api.js',
