@@ -5,7 +5,6 @@ var hbs = require('handlebars-form-helpers');
 
 var hbh = require('./helpers.js');
 var db = require('./database.js');
-var pages = require('./pages.js');
 
 hbs.register(hb);
 
@@ -268,44 +267,25 @@ $.EBSearch = function(self, callback)
 	var limit = self.post.limit;
 	var body = {};
 
-	console.log(fields);
-
-	/*
-	body.query = { 
-		"multi_match" : {
-			"query" : query.toLowerCase(), 
-			"fields" : fields,
-			"type" : "best_fields",
-			"tie_breaker": 0.2
-		}
-	};
-	*/
-
-	/*
-	body.query = { 
-		"query_string" : {
-			"query" : query.toLowerCase(), 
-			"fields" : fields,
-			"use_dis_max" : true
-		}
-	};
-	*/
-
 	body.query = {
-		"fuzzy_like_this" : {
-   			"fields" : fields,
-     			"like_text" : query.toLowerCase(),
-			"max_query_terms" : 12
-    		}
+		"multi_match" : {  
+        		"fields" : fields,
+   			"query" : query.toLowerCase(),
+			"fuzziness" : "AUTO"
+		}
 	};
 
+	body.filter = {
+		"bool" : {
+			"must" : [
+				{"match" : { "live" : true }},
+				{"match" : { "group" : "summary" }}
+			]
+		}
+	};
+	
 	if(last != null && last != "") {
-
-		body.query.range = {
-			"key" : {
-				"lt" : last
-			}	
-		};
+		body.filter.bool.must.push({"range" : { "key" : { "lt" : last }}});
 	}
 
 	if(limit == null || limit == "") {
@@ -342,5 +322,3 @@ $.EBSearch = function(self, callback)
 		}
 	});
 };
-
-$.registerPages(pages);

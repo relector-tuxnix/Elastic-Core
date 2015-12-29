@@ -2,6 +2,7 @@ var F = require('total.js');
 var http = require('http');
 var common = require('./elastic-core/common.js');
 var db = require('./elastic-core/database.js');
+var pages = require('./elastic-core/pages.js');
 
 F.once('load', function() {
     
@@ -50,6 +51,8 @@ F.once('load', function() {
 			}
 		});
 	};
+
+	common.registerPages(pages);
 
 	common.processRoutes();	
 
