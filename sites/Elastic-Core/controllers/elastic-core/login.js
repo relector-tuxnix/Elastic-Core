@@ -1,31 +1,24 @@
-var common = require('../../elastic-core/common.js')
-var pages = require('../../elastic-core/pages.js');
+var $ = exports;
 
-exports.install = function() {
-	F.route(pages.login.uri, getLoginPage, pages.login.options);
-	F.route(pages.login.uri, postLoginPage, pages.login.postOptions);
-	F.route(pages.logout.uri, getLogoutPage, pages.logout.options);
-};
+var common = require('../../elastic-core/common.js')
 
 // GET Login Page
-function getLoginPage()
-{
+$.getLogin = function() {
+
 	var self = this;
 
 	common.model = {};
-	common.model.pages = pages;
-	common.model.page = pages.login;
 	common.model.message = '';
 	common.model.email = '';
 
-	var page = common.make(self, pages.login.views);
+	var page = common.make(self, common.pages.getLogin);
 
 	self.html(page);
-}
+};
 
 // POST Login Page
-function postLoginPage()
-{
+$.postLogin = function() {
+
 	var self = this;
 
 	common.EBLogin(self, function(result) {
@@ -35,26 +28,26 @@ function postLoginPage()
 			common.model.message = "Invalid username or password.";
 			common.model.email = self.post.email;
 
-			var page = common.make(self, pages.login.views);			
+			var page = common.make(self, common.pages.getLogin);			
 
 			self.html(page);
 
 		} else {
 
-			self.redirect(pages.home.uri);
+			self.redirect(common.pages.home.uri);
 		}
 	});
-}
+};
 
 //GET Logout Page
-function getLogoutPage()
-{
+$.logout = function() {
+
 	var self = this;
 
 	common.model = {};
-	common.model.page = pages.logout;
+	common.model.page = common.routes.logout.page;
 
 	common.EBLogout(self);
 
-	self.redirect(pages.home.uri);
-}
+	self.redirect(common.pages.home.uri);
+};

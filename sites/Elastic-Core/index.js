@@ -1,5 +1,6 @@
 var F = require('total.js');
 var http = require('http');
+var common = require('./elastic-core/common.js');
 var db = require('./elastic-core/database.js');
 
 F.once('load', function() {
@@ -26,8 +27,6 @@ F.once('load', function() {
 			}
 		}, function (error, exists) {
 
-			console.log(exists);
-
 			if(exists.hits.total == 1) {
 
 				var storedUser = exists.hits.hits.pop()._source;
@@ -51,6 +50,10 @@ F.once('load', function() {
 			}
 		});
 	};
+
+	common.processRoutes();	
+
+	console.log("LOADED!")
 });
 
 F.http('debug');

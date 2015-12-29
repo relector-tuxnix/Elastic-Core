@@ -5,6 +5,7 @@ var hbs = require('handlebars-form-helpers');
 
 var hbh = require('./helpers.js');
 var db = require('./database.js');
+var pages = require('./pages.js');
 
 hbs.register(hb);
 
@@ -12,13 +13,99 @@ var $ = module.exports;
 
 var defaultLimit = F.config['default-item-limit'];
 
-$.model = {}
+$.model = {};
+
+$.routes = {};
+
+$.pages = {};
 
 $.lang = F.config['default-language'];
 
 $.locales = null;
 
 
+/*
+	Enable priority sorting of routes to allow site inheritance	
+ */
+$.registerPages = function(mappings) {
+	
+	for(var name in mappings) {
+
+		var page = mappings[name];
+
+		var add = true;
+
+		/* We don't always have a controller defined when we are overriding parent mappings */
+		if("controller" in page == false) {
+			page.controller = undefined;
+		}
+
+		var newRoute = { "url" : page.uri, 
+				 "controller" : page.controller,
+				 "flags" : page.flags, 
+				 "length" : undefined, 
+				 "middleware" : undefined,
+				 "timeout" : undefined,
+				 "options" : undefined,
+				 "priority" : 0,
+				 "active" : true
+			       };
+
+		if("priority" in page) {
+			newRoute.priority = page.priority;
+		} else {
+			page.priority = 0;
+		}
+
+		if("active" in page) {
+			newRoute.active = page.active;
+		} else {
+			page.active = true;
+		}
+		
+		/* If the route already exists, we need a priority to override it */	
+		if(name in $.routes) {
+
+			if(newRoute.priority < $.routes[name].priority) {
+
+				add = false;
+			}
+		}
+
+		if(add == true) {
+			$.routes[name] = newRoute;
+
+			$.pages[name] = page;
+		}
+	}
+};
+
+/*
+	Now we have all the routes let total.js know about them.
+ */
+$.processRoutes = function() {
+
+	for(var key in $.routes) {
+
+		var route = $.routes[key];
+
+		if(route.active == true) {
+	
+			/* Lets get the controller now that everything has actually loaded... we don't want circular reference issues! */
+			var cont = "require('../controllers/" + route.controller + "')." + key;
+
+			controller = eval(cont);
+
+			console.log("REGISTERED MAPPING: " + key + " -> " + cont);
+
+			F.route(route.url, controller, route.flags, route.length, route.middleware, route.timeout, route.options);
+		}
+	}
+};
+
+/*
+	Lookup the locale keyword and return it.
+ */
 $.locale = function(keyword) {
 
 	if($.locales == null) {
@@ -44,7 +131,7 @@ $.locale = function(keyword) {
 	return $.locales[keyword] || ''; 
 }
 
-$.make = function(self, views) {
+$.make = function(self, page) {
 
 	var out = "";
 
@@ -52,9 +139,14 @@ $.make = function(self, views) {
 	
 	$.model.locale = $.locale;
 
-	for(var i = 0; i < views.length; i++) {
+	$.model.pages = $.pages;
 
-		var item = views[i];
+	$.model.page = page;
+
+
+	for(var i = 0, len = $.model.page.views.length; i < len; i++) {
+
+		var item = $.model.page.views[i];
 
 		var modelKey = Object.keys(item)[0];
 
@@ -65,7 +157,7 @@ $.make = function(self, views) {
 		var template = hb.compile(source);
 
 		//Last view is our final view
-		if(i == views.length - 1) {
+		if(i == $.model.page.views.length - 1) {
 
 			out = template($.model);
 
@@ -233,9 +325,6 @@ $.EBSearch = function(self, callback)
 		body: body
 	}, function (error, response) {
 
-		console.log(error);
-		console.log(response);
-	
 		if(error == null) {
 
 			var items = [];
@@ -253,3 +342,5 @@ $.EBSearch = function(self, callback)
 		}
 	});
 };
+
+$.registerPages(pages);

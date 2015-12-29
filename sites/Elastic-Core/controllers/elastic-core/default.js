@@ -1,70 +1,60 @@
-var common = require('../../elastic-core/common.js');
-var pages = require('../../elastic-core/pages.js');
+var $ = exports;
 
+var common = require('../../elastic-core/common.js');
 
 //API Agent = "Mozilla/5.0 (API; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
 //WEB Agent = "Mozilla/5.0 (X11; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0"
 
-exports.install = function() {
-    F.route(pages.error401.uri, error401);
-    F.route(pages.error403.uri, error403);
-    F.route(pages.error404.uri, error404);
-    F.route(pages.error408.uri, error408);
-    F.route(pages.error431.uri, error431);
-    F.route(pages.error500.uri, error500);
+// Unauthorized
+$.error401 = function() {
+
+	var self = this;
+
+	$.error(self, 401);
 };
 
-
-// Unauthorized
-function error401() 
-{
-	var self = this;
-
-	error(self, 401);
-}
-
 // Forbidden
-function error403() 
-{
+$.error403 = function() {
+
 	var self = this;
 
-	error(self, 403);
-}
+	$.error(self, 403);
+};
 
 // Not Found
-function error404() 
-{
+$.error404 = function() {
+
 	var self = this;
 
-	error(self, 404);
-}
+	$.error(self, 404);
+};
 
 // Request Timeout
-function error408()
-{
+$.error408 = function() {
+
 	var self = this;
 
-	error(self, 408);
-}
+	$.error(self, 408);
+};
 
 // Request Header Fields Too Large
-function error431() 
-{
+$.error431 = function() {
+
 	var self = this;
 
-	error(self, 431);
-}	
+	$.error(self, 431);
+};	
 
 // Internal Server Error
-function error500() 
-{
+$.error500 = function() {
+
 	var self = this;
 
-	error(self, 500);
-}
+	$.error(self, 500);
+};
 
-function error(self, code) 
-{
+$.error = function(self, code) {
+
 	if(self.req.url.contains('api')) {
 
 		self.status = code;
@@ -75,8 +65,6 @@ function error(self, code)
 		self.status = 200;
 
 		common.model = {};
-		common.model.pages = pages;
-		common.model.page = pages.error;
 		common.model.code = code;
 
 		if(self.exception == null || self.exception == "") {
@@ -85,8 +73,8 @@ function error(self, code)
 			common.model.message = self.exception;
 		}
 
-		var page = common.make(self, pages.error.views);
+		var page = common.make(self, common.pages.error);
 
 		self.html(page);
 	}
-}
+};

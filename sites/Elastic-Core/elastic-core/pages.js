@@ -2,91 +2,115 @@ var $ = exports;
 
 $.error = {
 	uri: '/error',
+	controller: 'elastic-core/default.js',
 	label: 'Error Occured',
 	views: [
 		{'default' : 'elastic-core/error'}
 	],
-	options: [],
+	flags: [],
 	above: [],
 	below: []
 };
 
 $.error401 = {
 	uri: '#401',
+	controller: 'elastic-core/default.js',
 	label: 'Unauthorized'
 };
 
 $.error403 = {
 	uri: '#403',
+	controller: 'elastic-core/default.js',
 	label: 'Forbidden'
 };
 
 $.error404 = {
 	uri: '#404',
+	controller: 'elastic-core/default.js',
 	label: 'Not Found'
 };
 
 $.error408 = {
 	uri: '#408',
+	controller: 'elastic-core/default.js',
 	label: 'Request Timeout'
 };
 
 $.error431 = {
 	uri: '#431',
+	controller: 'elastic-core/default.js',
 	label: 'Request Header Fields Too Large'
 }
 
 $.error500 = {
 	uri: '#500',
+	controller: 'elastic-core/default.js',
 	label: 'Internal Server Error'
 };
 
 $.apiLogin = {
 	uri: '/api/login',
-	options: ['post', 'unauthorize'],
+	controller: 'elastic-core/api.js',
+	flags: ['post', 'unauthorize'],
 	label: 'API Login'
 };
 
 $.apiLogout = {
 	uri: '/api/logout',
-	options: ['get', 'authorize'],
+	controller: 'elastic-core/api.js',
+	flags: ['get', 'authorize'],
 	label: 'API Logout'
 };
 
 $.apiRegister = {
 	uri: '/api/register',
-	options: ['post', 'unauthorize'],
+	controller: 'elastic-core/api.js',
+	flags: ['post', 'unauthorize'],
 	label: 'API Register',
-	active: true
 };
 
 $.apiSearch = {
 	uri: '/api/search',
-	options: ['post'],
+	controller: 'elastic-core/api.js',
+	flags: ['post'],
 	label: 'Search.'
 };
 
 $.apiSetLanguage = {
 	uri: '/api/setlanguage',
-	options: ['post'],
+	controller: 'elastic-core/api.js',
+	flags: ['post'],
 	label: 'Set Language',
 }
 
 $.home = {
 	uri: '/',
+	controller: 'elastic-core/home.js',
 	label: 'Elastic Core Example Home Page',
 	views: [
 		{'default' : 'elastic-core/home.html'}
 	],
-	options: [],
+	flags: ['get'],
 	above: [],
 	below: []
 };
 
-$.login = {
+$.getLogin = {
 	uri: '/login',
-	options: ['unauthorize', 'get'],
-	postOptions: ['unauthorize', 'post'],
+	controller: 'elastic-core/login.js',
+	flags: ['unauthorize', 'get'],
+	label: 'Elastic Core Example Login Page',
+	views: [
+		{'default' : 'elastic-core/login.html'}
+	],
+	above: [],
+	below: []
+};
+
+$.postLogin = {
+	uri: '/login',
+	controller: 'elastic-core/login.js',
+	flags: ['unauthorize', 'post'],
 	label: 'Elastic Core Example Login Page',
 	views: [
 		{'default' : 'elastic-core/login.html'}
@@ -97,21 +121,32 @@ $.login = {
 
 $.logout = {
 	uri: '/logout',
-	options: ['authorize'],
+	controller: 'elastic-core/login.js',
+	flags: ['authorize'],
 	label: 'Elastic Core Example Logout',
 	above: [],
 	below: []
 };
 
-$.register = {
+$.getRegister = {
 	uri: '/register',
-	options: ['unauthorize'],
-	postOptions: ['unauthorize', 'post'],
+	controller: 'elastic-core/register.js',
+	flags: ['unauthorize'],
+	postFlags: ['unauthorize', 'post'],
 	label: 'Register',
 	views: [
 		{'default' : 'elastic-core/register.html'}
 	],
-	active: true,
+	above: [],
+	below: []
+};
+
+$.postRegister = {
+	uri: '/register',
+	controller: 'elastic-core/register.js',
+	flags: ['unauthorize', 'post'],
+	label: 'Register',
+	views: [],
 	above: [],
 	below: []
 };

@@ -20,6 +20,7 @@ var definition = (function() {
 		return {String}; string is returned
 	*/
 	Controller.prototype.view = function(name) {
+
 		var self = this;
 
 		var filename = utils.combine(self.config['directory-views'], name);
