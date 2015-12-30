@@ -299,7 +299,7 @@ $.EBRegister = function(self, callback) {
 	});
 };
 
-$.EBSearch = function(self, callback)
+$.EBSearch = function(self, filter, callback)
 {
 	var query = self.post.query;
 	var last = self.post.last;
@@ -308,6 +308,8 @@ $.EBSearch = function(self, callback)
 	var type = self.post.type;
 	var limit = self.post.limit;
 	var body = {};
+	
+	body.filter = filter;
 
 	body.query = {
 		"multi_match" : {  
@@ -317,17 +319,15 @@ $.EBSearch = function(self, callback)
 		}
 	};
 
-	body.filter = {
-		"bool" : {
-			"must" : [
-				{"match" : { "live" : true }},
-				{"match" : { "group" : "summary" }}
-			]
-		}
-	};
-	
 	if(last != null && last != "") {
-		body.filter.bool.must.push({"range" : { "key" : { "lt" : last }}});
+
+		body.filter = {
+			"bool" : {
+				"must" : [
+					{"range" : { "key" : { "lt" : last }}}
+				]
+			}
+		};
 	}
 
 	if(limit == null || limit == "") {

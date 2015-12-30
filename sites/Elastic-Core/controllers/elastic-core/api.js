@@ -78,7 +78,7 @@ $.apiSearch = function() {
 
 	var self = this;
 
-	common.EBSearch(self, function(results) {
+	common.EBSearch(self, {}, function(results) {
 
 		if(results.success == false) {
 			
