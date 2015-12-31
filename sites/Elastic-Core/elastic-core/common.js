@@ -169,7 +169,7 @@ $.make = function(self, page) {
 	return out;
 };
 
-$.EBGetMany = function(index, type, body, limit, callback)
+$.EBGetMany = function(index, type, body, limit, sort, callback)
 {
 	if(limit == null || limit == "") {
 		limit = 0;
@@ -183,10 +183,12 @@ $.EBGetMany = function(index, type, body, limit, callback)
 	db.client.search({
 		index: index,
 		type: type,
-		sort: "key:desc",
+		sort: sort,
 		size: limit,
 		body: body
 	}, function (error, response) {
+
+		console.log(error);
 
 		if(error == null) {
 
@@ -364,14 +366,8 @@ $.EBRegister = function(self, callback) {
 	});
 };
 
-$.EBSearch = function(self, filter, callback)
-{
-	var query = self.post.query;
-	var last = self.post.last;
-	var fields = self.post["fields[]"];
-	var index = self.post.index;
-	var type = self.post.type;
-	var limit = self.post.limit;
+$.EBSearch = function(query, last, limit, fields, sort, index, type, filter, callback) {
+
 	var body = {};
 	
 	body.filter = filter;
@@ -407,7 +403,7 @@ $.EBSearch = function(self, filter, callback)
 	db.client.search({
 		index: index,
 		type: type,
-		sort: "key:desc",
+		sort: sort,
 		size: limit,
 		body: body
 	}, function (error, response) {

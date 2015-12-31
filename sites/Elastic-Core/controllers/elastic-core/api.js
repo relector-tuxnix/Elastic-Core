@@ -12,6 +12,7 @@ $.apiGetMany = function() {
        	var index = self.post.index;
         var type = self.post.type;
 	var limit = self.post.limit;
+	var sort = self.post.sort;
 	
 	var body = {
 		"query" : {	
@@ -29,7 +30,7 @@ $.apiGetMany = function() {
 		body.query.bool.must.push({"range" : { "key" : { "lt" : last }}});
 	}
 
-	common.EBGetMany(index, type, body, limit, function(results) {
+	common.EBGetMany(index, type, body, limit, sort, function(results) {
 
 		if(results.success == false) {
 			
@@ -117,7 +118,15 @@ $.apiSearch = function() {
 
 	var self = this;
 
-	common.EBSearch(self, {}, function(results) {
+	var query = self.post.query;
+	var last = self.post.last;
+	var fields = self.post["fields[]"];
+	var limit = self.post.limit;
+	var sort = self.post.sort;
+	var index = self.post.index;
+	var type = self.post.type;
+
+	common.EBSearch(query, last, limit, fields, sort, index, type, {}, function(results) {
 
 		if(results.success == false) {
 			
