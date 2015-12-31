@@ -1,4 +1,4 @@
-var fs = require('fs')
+var fs = require('fs');
 
 var common = require('./elastic-core/common.js');
 
@@ -35,7 +35,7 @@ if(process.argv.length == 6) {
 	});
 
 } else {
-	console.log("You need to supply: <output-file-name> <index-name> <index-type> <_id-key>");	
+	console.log("You need to supply: <input-file-name> <index-name> <index-type> <_id-key>");	
 }
 
 

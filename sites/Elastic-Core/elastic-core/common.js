@@ -188,8 +188,6 @@ $.EBGetMany = function(index, type, body, limit, sort, callback)
 		body: body
 	}, function (error, response) {
 
-		console.log(error);
-
 		if(error == null) {
 
 			var items = [];
