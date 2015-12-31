@@ -2,6 +2,45 @@ var $ = exports;
 
 var common = require('../../elastic-core/common.js');
 
+$.apiGetMany = function() {
+
+	var self = this;
+
+	var from = self.post.from;
+	var to = self.post.to;
+	var last = self.post.last;
+       	var index = self.post.index;
+        var type = self.post.type;
+	var limit = self.post.limit;
+	
+	var body = {
+		"query" : {	
+			"bool" : {
+				"must" : []
+			}
+		}
+	};
+
+	if(from != "" && to != "") {
+		body.query.bool.must.push({"range" : { "created" : { "from" : from, "to" : to }}});
+	}
+
+	if(last != null && last != "") {
+		body.query.bool.must.push({"range" : { "key" : { "lt" : last }}});
+	}
+
+	common.EBGetMany(index, type, body, limit, function(results) {
+
+		if(results.success == false) {
+			
+			self.view500(results.message);
+			
+		} else {
+
+			self.json(results);
+		}
+	});
+};
 
 $.apiGetById = function() {
 
@@ -11,7 +50,7 @@ $.apiGetById = function() {
        	var index = self.post.index;
         var type = self.post.type;
 
-	common.EBGetById(self, id, index, type, function(results) {
+	common.EBGetById(id, index, type, function(results) {
 
 		if(results.success == false) {
 			
@@ -32,7 +71,7 @@ $.apiDeleteById = function() {
 	var index = self.post.index;
 	var type = self.post.type;
 
-	common.EBDelete(self, id, index, type, function(results) {
+	common.EBDelete(id, index, type, function(results) {
 
 		if(results.success == false) {
 	

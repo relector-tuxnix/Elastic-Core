@@ -48,6 +48,13 @@ $.error500 = {
 	label: 'Internal Server Error'
 };
 
+$.apiGetMany = {
+	uri: '/api/get-many',
+	controller: 'elastic-core/api.js',
+	flags: ['post'],
+	label: 'API Get Many.'
+};
+
 $.apiGetById = {
 	uri: '/api/get-by-id',
 	controller: 'elastic-core/api.js',
