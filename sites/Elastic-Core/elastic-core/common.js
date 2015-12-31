@@ -169,7 +169,44 @@ $.make = function(self, page) {
 	return out;
 };
 
-$.EBGetById = function(self, id, index, type, callback)
+$.EBGetMany = function(index, type, body, limit, callback)
+{
+	if(limit == null || limit == "") {
+		limit = 0;
+	}
+
+	 //Check if submitted limit is within specified bounds
+        if(limit < 1 || limit > defaultLimit) {
+                limit = defaultLimit;
+        } 
+
+	db.client.search({
+		index: index,
+		type: type,
+		sort: "key:desc",
+		size: limit,
+		body: body
+	}, function (error, response) {
+
+		if(error == null) {
+
+			var items = [];
+
+			for(var i = 0; i < response.hits.hits.length; i++) {
+
+				items.push(response.hits.hits[i]._source);
+			}
+
+			callback({success: true, message: items}); 
+
+		} else {
+
+			callback({success: false, message: "An error has occurred."});
+		}
+	});
+};
+
+$.EBGetById = function(id, index, type, callback)
 {
 	var body = {};
 
@@ -191,7 +228,35 @@ $.EBGetById = function(self, id, index, type, callback)
 	});	
 };
 
-$.EBDelete = function(self, id, index, type, callback)
+$.EBIndex = function(id, body, index, type, callback) {
+
+	db.client.index({
+		index: index,
+		type: type,
+		id: id,
+		body: body,
+		refresh: true
+	}, function(err, response) {
+
+		if(err == null) {
+			
+			if(response.created == true) {
+
+				callback({success: true, message: "Saved.", created: true});
+
+			} else {
+
+				callback({success: true, message: "Updated.", created: false});
+			}	
+			
+		} else {
+
+			callback({success: false, message: "An error has occurred.", created: false});
+		}
+	});
+};
+
+$.EBDelete = function(id, index, type, callback)
 {
 	db.client.delete({
 		index: index,
