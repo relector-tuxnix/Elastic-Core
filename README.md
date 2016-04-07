@@ -1,6 +1,6 @@
 
 # Elastic-Core
-A simple website core using in total.js and elastic-search. This just a base website consisting of shared components that can be used to build bigger and better websites!
+A simple website core using in total.js and elastic-search. This is just a base website consisting of shared components that can be used to build bigger and better websites!
 
 
 ## Requirements
