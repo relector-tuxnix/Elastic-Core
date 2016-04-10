@@ -1,6 +1,7 @@
 var F = require('total.js');
 var fs = require('fs');
 var hb = require('handlebars');
+var path = require('path');
 var hbs = require('handlebars-form-helpers');
 
 var hbh = require('./helpers.js');
@@ -10,17 +11,82 @@ hbs.register(hb);
 
 var $ = module.exports;
 
-var defaultLimit = F.config['default-item-limit'];
-
 $.model = {};
 
 $.routes = {};
 
 $.pages = {};
 
-$.lang = F.config['default-language'];
+$.defaultLimit = null;
+
+$.defaultTheme = null;
 
 $.locales = null;
+
+
+F.once('load', function() {
+ 
+	$.defaultLimit = F.config['default-item-limit'];
+
+	$.defaultTheme = F.config['default-theme'];
+
+	// Have to hard code the path as core does not do themes and there can only be one configuration
+	var pages = require('./elastic-core-pages.js');
+
+	$.registerPages(pages);
+
+	$.processRoutes();	
+
+	$.EBSetupAuthentication();
+
+	console.log("LOADED ELASTIC-CORE!");
+});
+
+
+$.EBSetupAuthentication = function() { 
+
+	var auth = MODULE('authorization');
+
+	auth.onAuthorization = function(user, callback) {
+
+		db.client.search({
+			index: 'users',
+			size: 1,
+			body: {
+				query: {
+					"filtered" : {
+						"filter" : {
+							"term" : {
+								"id" : user.id
+							}
+						}
+					}
+				}
+			}
+		}, function (error, exists) {
+
+			if(exists.hits.total == 1) {
+
+				var storedUser = exists.hits.hits.pop()._source;
+
+				auth.comparePassword(user.password, storedUser.password, function(err, isMatch) {
+					
+					if(isMatch) {
+
+						callback(storedUser);
+
+					} else {
+						
+						callback(null);
+					}
+				});
+
+			} else {
+				callback(error);
+			}
+		});
+	};
+};
 
 
 /*
@@ -109,22 +175,22 @@ $.locale = function(keyword) {
 
 	if($.locales == null) {
 
-		var tmp = '';
+		var filename = utils.combine(F.config['directory-locale'], $.defaultTheme);
 
-		var filename = utils.combine(F.config['directory-locale'], $.lang + '.json');
+		filename = path.join(filename, F.config['default-language']);
+
+		filename = filename + '.json';
 
 		if(fs.existsSync(filename) == true) {
 
-			tmp = fs.readFileSync(filename, 'utf-8');
-		}
+			var tmp = fs.readFileSync(filename, 'utf-8');
 
-		if(tmp == '') {
-			$.lang = F.config['default-language'];
+			$.locales = JSON.parse(tmp);
 
-			return '';
-		}
+		} else {
 
-		$.locales = JSON.parse(tmp);
+			$.locales = {};
+		} 
 	}
 
 	return $.locales[keyword] || ''; 
@@ -176,8 +242,8 @@ $.EBGetMany = function(index, type, body, limit, sort, callback)
 	}
 
 	 //Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > defaultLimit) {
-                limit = defaultLimit;
+        if(limit < 1 || limit > $.defaultLimit) {
+                limit = $.defaultLimit;
         } 
 
 	db.client.search({
@@ -208,8 +274,6 @@ $.EBGetMany = function(index, type, body, limit, sort, callback)
 
 $.EBGetById = function(id, index, type, callback)
 {
-	var body = {};
-
 	db.client.get({
 		index: index,
 		type: type,
@@ -394,8 +458,8 @@ $.EBSearch = function(query, last, limit, fields, sort, index, type, filter, cal
 	}
 
 	//Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > defaultLimit) {
-		limit = defaultLimit;
+        if(limit < 1 || limit > $.defaultLimit) {
+		limit = $.defaultLimit;
         } 
 
 	db.client.search({

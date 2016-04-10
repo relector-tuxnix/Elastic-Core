@@ -23,6 +23,7 @@ static-url-document             : /uploads/
 static-accepts-custom           : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png
 default-layout                 	: default
 default-request-length     	: 5120 
-default-language		: elastic-core/en-US
+default-language		: en-US
 default-item-limit		: 50
+default-theme			: elastic-core
 max-file-size			: 104857600

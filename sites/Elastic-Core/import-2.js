@@ -4,7 +4,7 @@ var cuid = require('cuid');
 
 var common = require('./elastic-core/common.js');
 
-	fs.readFile('elastic-blog-posts-2.json', 'utf8', function(err, data) {
+	fs.readFile('posts.out', 'utf8', function(err, data) {
 	
 		if(err) {
 			return console.log(err);
@@ -17,17 +17,18 @@ var common = require('./elastic-core/common.js');
 
 			for(var i = 0, len = json.length; i < len; i++) {
 
-				var data = json[i]._source;
+				//var data = json[i]._source;
+				var data = json[i];
 
 				var updated = new Date().format('yyyy/MM/dd');
 
-				var article = {'uri' : data.uri, 'content' : data.content, 'user' : data.user, 'live' : data.live, 'group' : 'article', 'created' : data.uri.substring(0, 10).replace(new RegExp('-', 'g'), "/")};
+				var article = {'key' : cuid(), 'id' : data.uri, 'content' : data.content, 'user' : data.user, 'live' : data.live, 'group' : 'article', 'created' : data.uri.substring(0, 10).replace(new RegExp('-', 'g'), "/")};
 
 				article.updated = updated;
 
 				dos.push(article);
 
-				var summary = {'uri' : data.uri + "-Summary", 'content' : data.summary, 'user' : data.user, 'live' : data.live, 'group' : 'summary', 'created' : data.uri.substring(0,10).replace(new RegExp('-', 'g'),"/")};
+				var summary = {'key' : cuid(), 'id' : data.uri + "-Summary", 'content' : data.summary, 'user' : data.user, 'live' : data.live, 'group' : 'summary', 'created' : data.uri.substring(0,10).replace(new RegExp('-', 'g'),"/")};
 
 				summary.updated = updated;
 

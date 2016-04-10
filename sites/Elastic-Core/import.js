@@ -2,12 +2,11 @@ var fs = require('fs');
 
 var common = require('./elastic-core/common.js');
 
-if(process.argv.length == 6) {
+if(process.argv.length == 5) {
 
 	var file = process.argv[2];
 	var index = process.argv[3];
 	var type = process.argv[4];
-	var id = process.argv[5];
 
 	fs.readFile(file, 'utf8', function(err, data) {
 	
@@ -22,7 +21,7 @@ if(process.argv.length == 6) {
 
 				var data = json[i];
 
-				common.EBIndex(data[id], data, index, type, function(results) {
+				common.EBIndex(data.id, data, index, type, function(results) {
 
 					console.log(results);
 				});
@@ -35,7 +34,7 @@ if(process.argv.length == 6) {
 	});
 
 } else {
-	console.log("You need to supply: <input-file-name> <index-name> <index-type> <_id-key>");	
+	console.log("You need to supply: <input-file-name> <index-name> <index-type>");	
 }
 
 

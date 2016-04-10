@@ -14,4 +14,3 @@ $.home = function() {
 
 	self.html(page);
 }
-
