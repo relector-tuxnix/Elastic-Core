@@ -235,7 +235,7 @@ module.exports.install = function() {
 
 	SUGAR = (framework.config.name + framework.config.version + SUGAR).replace(/\s/g, '');
 
-	framework.onAuthorization = function(req, res, flags, callback) {
+	framework.onAuthorize = function(req, res, flags, callback) {
 
 		if(users.onAuthorization !== null) {
 

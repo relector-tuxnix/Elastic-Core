@@ -14,8 +14,8 @@ if [ -n "$1" ]; then
 
 		touch ./live/ALL-CHANGES-WILL-BE-LOST-INSIDE-THIS-DIRECTORY
 
-		cp -r ./sites/Elastic-Core/* ./live
-		cp -r ./sites/$1/* ./live
+		cp -rf ./sites/Elastic-Core/* ./live
+		cp -rf ./sites/$1/* ./live
 
 		echo "Deploy Completed!"
 		echo "Launching site..."

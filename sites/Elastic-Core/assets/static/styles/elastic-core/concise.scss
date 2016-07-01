@@ -1,0 +1,37 @@
+/**
+ * Concise Framework
+ * https://github.com/ConciseCSS/concise.css
+ *
+ * Copyright 2015 Concise Team
+ * Released under the MIT license
+ * http://opensource.org/licenses/MIT
+ *
+ */
+
+// Globals
+@import './assets/static/styles/elastic-core/core/globals/globals';
+@import './assets/static/styles/elastic-core/core/globals/functions';
+@import './assets/static/styles/elastic-core/core/globals/mixins';
+
+// Natives
+@import './assets/static/styles/elastic-core/core/layout/base';
+@import './assets/static/styles/elastic-core/core/layout/blockquotes';
+@import './assets/static/styles/elastic-core/core/layout/buttons';
+@import './assets/static/styles/elastic-core/core/layout/forms';
+@import './assets/static/styles/elastic-core/core/layout/headings';
+@import './assets/static/styles/elastic-core/core/layout/lists';
+@import './assets/static/styles/elastic-core/core/layout/print';
+@import './assets/static/styles/elastic-core/core/layout/tables';
+@import './assets/static/styles/elastic-core/core/layout/type';
+
+// Utils
+@import './assets/static/styles/elastic-core/core/utils/atgrid';
+@import './assets/static/styles/elastic-core/core/utils/colors';
+@import './assets/static/styles/elastic-core/core/utils/conditional-styling';
+@import './assets/static/styles/elastic-core/core/utils/helpers';
+
+// Add-Ons
+@import './assets/static/styles/elastic-core/addons/concise-ui/concise-ui';
+
+// Extra Colors
+@import "./assets/static/styles/elastic-core/cms/ColorMeSASS.scss";

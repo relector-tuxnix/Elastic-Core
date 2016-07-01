@@ -30,12 +30,13 @@ F.once('load', function() {
 
 	$.defaultTheme = F.config['default-theme'];
 
-	// Have to hard code the path as core does not do themes and there can only be one configuration
+	/* Have to hard code the path as core does not do themes and there can only be one configuration */
 	var pages = require('./elastic-core-pages.js');
 
 	$.registerPages(pages);
 
-	$.processRoutes();	
+	/* We don't want to process routes as they are processed by the child site */
+	//$.processRoutes();
 
 	$.EBSetupAuthentication();
 
@@ -164,7 +165,7 @@ $.processRoutes = function() {
 			console.log("REGISTERED MAPPING: " + key + " -> " + cont);
 
 			F.route(route.url, controller, route.flags, route.length, route.middleware, route.timeout, route.options);
-		}
+		}	
 	}
 };
 
