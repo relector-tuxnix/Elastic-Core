@@ -48,6 +48,8 @@ Install the following node modules
     $> npm install handlebars --save
     
     $> npm install handlebars-form-helpers --save
+
+    $> npm install validate.js --save
  
 Enter the Elastic-Core project
 
