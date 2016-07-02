@@ -9,7 +9,7 @@ A simple website core using in total.js and elastic-search. This is just a base 
 * [NPM.js](https://www.npmjs.com/)
 * [Elastic Search](https://www.elastic.co/downloads/elasticsearch)
 * [Total.js](https://www.totaljs.com)
-* [ElasticSearch.js](https://www.npmjs.com/package/bcrypt-nodejs)
+* [ElasticSearch.js](https://github.com/elastic/elasticsearch-js)
 * [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
 * [Handlebars.js](http://handlebarsjs.com/)
 * [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
