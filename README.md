@@ -13,6 +13,7 @@ A simple website core using in total.js and elastic-search. This is just a base 
 * [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
 * [Handlebars.js](http://handlebarsjs.com/)
 * [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
+* [Validate.js](http://validatejs.org/)
 
 ## Linux Installation
 
