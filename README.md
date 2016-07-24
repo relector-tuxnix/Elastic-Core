@@ -9,10 +9,11 @@ A simple website core using in total.js and elastic-search. This is just a base 
 * [NPM.js](https://www.npmjs.com/)
 * [Elastic Search](https://www.elastic.co/downloads/elasticsearch)
 * [Total.js](https://www.totaljs.com)
-* [ElasticSearch.js](https://www.npmjs.com/package/bcrypt-nodejs)
+* [ElasticSearch.js](https://github.com/elastic/elasticsearch-js)
 * [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
 * [Handlebars.js](http://handlebarsjs.com/)
 * [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
+* [Validate.js](http://validatejs.org/)
 
 ## Linux Installation
 
@@ -47,6 +48,8 @@ Install the following node modules
     $> npm install handlebars --save
     
     $> npm install handlebars-form-helpers --save
+
+    $> npm install validate.js --save
  
 Enter the Elastic-Core project
 
