@@ -67,7 +67,7 @@ Users.prototype._onAuthorization = function(req, res, flags, callback) {
 
 	var user = self.users[id];
 
-	if (user) {
+	if(user) {
 		user.expire = new Date().add('m', self.options.expireSession);
 
 		req.user = user.user;

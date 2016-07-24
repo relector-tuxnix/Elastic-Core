@@ -1,5 +1,7 @@
 var $ = exports;
 
+var val = require("validate.js");
+
 var common = require('../../elastic-core/common.js');
 
 $.apiGetMany = function() {
@@ -89,7 +91,10 @@ $.apiLogin = function() {
 
 	var self = this;
 
-	common.EBLogin(self, function(result) {
+	var email = self.post.email;
+	var password = self.post.password;
+
+	common.EBLogin(self, email, password, function(result) {
 
 		self.json(result);
 	});
@@ -99,10 +104,43 @@ $.apiRegister = function() {
 
 	var self = this;
 
-	common.EBRegister(self, function(result) {
+	var email = self.post.email;
+	var password = self.post.password;
+	var confirm = self.post.confirm;
 
-		self.json(result);
-	});
+	var constraints = {
+		"email": {
+			presence: true,
+	  		email: true,
+		},
+		"password": {
+			presence: true,
+	  		length: {
+				minimum: 5
+	  		}
+	  	},
+	  	"confirm": {
+			presence: true,
+			equality: {
+				attribute: "password",
+				message: "^The passwords do not match!"
+			}
+		}
+	};
+
+	var failed = val.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
+
+	if(failed == undefined) {
+
+		common.EBRegister(self, email, password, function(result) {
+
+			self.json(result);
+		});
+
+	} else {
+
+		self.json({success: false, message: failed});
+	}
 };
 
 $.apiLogout = function() {

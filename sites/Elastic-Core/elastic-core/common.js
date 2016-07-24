@@ -50,29 +50,15 @@ $.EBSetupAuthentication = function() {
 
 	auth.onAuthorization = function(user, callback) {
 
-		db.client.search({
-			index: 'users',
-			size: 1,
-			body: {
-				query: {
-					"filtered" : {
-						"filter" : {
-							"term" : {
-								"id" : user.id
-							}
-						}
-					}
-				}
-			}
-		}, function (error, exists) {
+		$.EBGetById(user.id, 'users', 'user', function(result) {
 
-			if(exists.hits.total == 1) {
+			if(result.success == true) {
 
-				var storedUser = exists.hits.hits.pop()._source;
+				var storedUser = result.message;
 
 				auth.comparePassword(user.password, storedUser.password, function(err, isMatch) {
 					
-					if(isMatch) {
+					if(isMatch == true) {
 
 						callback(storedUser);
 
@@ -83,7 +69,7 @@ $.EBSetupAuthentication = function() {
 				});
 
 			} else {
-				callback(error);
+				callback(null);
 			}
 		});
 	};
@@ -253,9 +239,9 @@ $.EBGetMany = function(index, type, body, limit, sort, callback)
 		sort: sort,
 		size: limit,
 		body: body
-	}, function (error, response) {
+	}, function (err, response) {
 
-		if(error == null) {
+		if(err == null) {
 
 			var items = [];
 
@@ -268,25 +254,29 @@ $.EBGetMany = function(index, type, body, limit, sort, callback)
 
 		} else {
 
+			console.log(err);
+
 			callback({success: false, message: "An error has occurred."});
 		}
 	});
 };
 
-$.EBGetById = function(id, index, type, callback)
-{
+$.EBGetById = function(id, index, type, callback) {
+
 	db.client.get({
 		index: index,
 		type: type,
 		size: 1,
 		id: id
-	}, function (error, response) {
-
-		if(error == null && response != null && response._source !=  null) {
+	}, function (err, response) {
+	
+		if(err == null && response != null && response._source !=  null) {
 
 			callback({success: true, message: response._source}); 
 
 		} else {
+
+			console.log(err);
 
 			callback({success: false, message: "An error has occurred."});
 		}
@@ -316,6 +306,8 @@ $.EBIndex = function(id, body, index, type, callback) {
 			
 		} else {
 
+			console.log(err);
+
 			callback({success: false, message: "An error has occurred.", created: false});
 		}
 	});
@@ -336,25 +328,26 @@ $.EBDelete = function(id, index, type, callback)
 
 		} else {
 
+			console.log(err);
+
 			callback({success: false, message: "Failed to delete."});
 		}
 	});
 };
 
-$.EBLogin = function(self, callback) {
+$.EBLogin = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
-	
-	var id = self.post.email;
-	var password = self.post.password;
 
 	auth.login(self, {id: id, password: password}, function(result) {
 
 		if(result == false) {
-			callback({success: false, message: "Login failed."});
+
+			callback({success: false, message: ["Login failed."]});
 
 		} else {
-			callback({success: true, message: "Login success." });
+
+			callback({success: true, message: ["Login success."]});
 		}
 	});
 };
@@ -366,28 +359,15 @@ $.EBLogout = function(self) {
 	auth.logoff(self, self.user.id);
 };
 
-$.EBRegister = function(self, callback) {
+$.EBRegister = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
-	var email = self.post.email;
-	var password = self.post.password;
-	var confirm = self.post.confirmPassword;
+	$.EBGetById(id, 'users', 'user', function(result) {
 
-	db.client.count({
-		index: 'users',
-		body: {
-			"query" : {
-				"term": {
-					"id" : email
-				}
-			}
-		}
-	}, function (err, exists) {
+		if(result.success == true) {
 
-		if(err != null || exists.count > 0) {
-
-			callback({success: false, message: "Username already exists."});
+			callback({success: false, message: ["Username already exists."]});
 
 		} else {
 
@@ -395,7 +375,9 @@ $.EBRegister = function(self, callback) {
 
 				if(err != null) {
 
-					callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
+					console.log(err);
+
+					callback({success: false, message: ["An error has occurred. This has been reported. Thanks!"]});
 		
 				} else {
 
@@ -404,10 +386,10 @@ $.EBRegister = function(self, callback) {
 					db.client.index({
 						index: 'users',
 						type: 'user',
-						id: email,
+						id: id,
 						refresh: true,
 						body: {
-							id: email,
+							id: id,
 							password: hash,
 							updated: timestamp,
 							created: timestamp
@@ -416,11 +398,13 @@ $.EBRegister = function(self, callback) {
 
 						if(err == null) {
 							
-							callback({success: true, message: "User registration successful."});
+							callback({success: true, message: ["User registration successful."]});
 							
 						} else {
 
-							callback({success: false, message: "An error has occurred. This has been reported. Thanks!"});
+							console.log(err);
+
+							callback({success: false, message: ["An error has occurred. This has been reported. Thanks!"]});
 						}
 					});
 				}
