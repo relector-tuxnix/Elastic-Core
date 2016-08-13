@@ -1,7 +1,5 @@
 var $ = exports;
 
-var val = require("validate.js");
-
 var common = require('../../elastic-core/common.js');
 
 $.apiGetMany = function() {
@@ -128,7 +126,7 @@ $.apiRegister = function() {
 		}
 	};
 
-	var failed = val.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
+	var failed = common.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
 
 	if(failed == undefined) {
 

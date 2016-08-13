@@ -10,7 +10,7 @@ $.error401 = function() {
 
 	var self = this;
 
-	$.error(self, 401);
+	$.handleError(self, 401);
 };
 
 // Forbidden
@@ -18,7 +18,7 @@ $.error403 = function() {
 
 	var self = this;
 
-	$.error(self, 403);
+	$.handleError(self, 403);
 };
 
 // Not Found
@@ -26,7 +26,7 @@ $.error404 = function() {
 
 	var self = this;
 
-	$.error(self, 404);
+	$.handleError(self, 404);
 };
 
 // Request Timeout
@@ -34,7 +34,7 @@ $.error408 = function() {
 
 	var self = this;
 
-	$.error(self, 408);
+	$.handleError(self, 408);
 };
 
 // Request Header Fields Too Large
@@ -42,7 +42,7 @@ $.error431 = function() {
 
 	var self = this;
 
-	$.error(self, 431);
+	$.handleError(self, 431);
 };	
 
 // Internal Server Error
@@ -50,10 +50,18 @@ $.error500 = function() {
 
 	var self = this;
 
-	$.error(self, 500);
+	$.handleError(self, 500);
 };
 
-$.error = function(self, code) {
+// Generic error
+$.error = function() {
+
+	var self = this;
+
+	$.handleError(self, 200);
+};
+
+$.handleError = function(self, code) {
 
 	if(self.req.url.contains('api')) {
 

@@ -3,6 +3,7 @@ var fs = require('fs');
 var hb = require('handlebars');
 var path = require('path');
 var hbs = require('handlebars-form-helpers');
+var val = require("validate.js");
 
 var hbh = require('./helpers.js');
 var db = require('./database.js');
@@ -22,6 +23,8 @@ $.defaultLimit = null;
 $.defaultTheme = null;
 
 $.locales = null;
+
+$.validate = val.validate;
 
 
 F.once('load', function() {
