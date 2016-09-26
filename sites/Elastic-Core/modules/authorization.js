@@ -81,7 +81,7 @@ Users.prototype._onAuthorization = function(req, res, flags, callback) {
 };
 
 /*
-	Login an user
+	Login a user
 	@controller {Controller}
 	@id {Number}
 	@user {Object}
@@ -97,14 +97,14 @@ Users.prototype.login = function(controller, user, callback) {
 		if(user) {
 			var ip = controller.req.ip;
 			var agent = controller.req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '');
-			var uniqueKey = user.id + "," + ip + "," + agent;
+			var uniqueKey = user["_id"] + "," + ip + "," + agent;
 			
 			self.users[uniqueKey] = { user: user, expire: new Date().add('m', self.options.expireSession) };
 
 			controller.req.user = user;
 		
 			self.refresh();
-			self.emit('login', user.id, user);
+			self.emit('login', user["_id"], user);
 			self._writeOK(uniqueKey, controller.req, controller.res);
 
 			callback(true);
@@ -116,7 +116,7 @@ Users.prototype.login = function(controller, user, callback) {
 };
 
 /*
-	Logoff an user
+	Logoff a user
 	@controller {Controller}
 	@id {Number}
 	return {Users}

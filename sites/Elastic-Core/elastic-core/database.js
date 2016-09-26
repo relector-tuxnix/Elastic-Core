@@ -1,28 +1,23 @@
-var elasticsearch = require('elasticsearch');
+/*
+ * Couchbase Setup:
+ * 
+ *	$> ln -s /usr/bin/python2.7 /usr/bin/python
+ *	$> cd /opt/couchbase
+ *	$> ./bin/install/reloc.sh `pwd`
+ *	$> ./bin/couchbase-server -- -noinput -detached 
+ *	$> ./bin/couchbase-server -k
+ *	$> sudo ./bin/cbbackup http://127.0.0.1:8091 backups/backup-X
+ *	$> ./bin/cbq
+ *	$>	CREATE PRIMARY INDEX `coreIndex` ON `core` USING GSI;
+ *	$>	CREATE INDEX `coreKeyIndex` ON `core`(`_key`) USING GSI;
+ *	$>	CREATE INDEX `coreTypeIndex` ON `core`(`_type`) USING GSI;
+ *
+ */
 
-/* Connect the client to two nodes, requests will be load-balanced between them using round-robin */
-var client = elasticsearch.Client({
-	hosts: ['localhost:9200']
-});
+var couchbase = require('couchbase')
 
-exports.client = client;
+var $ = module.exports;
 
-client.indices.create({
-
-	index: 'users',
-
-	body : {
-		"mappings" : {
-			"user" : {
-				"properties" : {
-					"id" : {"type" : "string", "index" : "analyzed", "null_value" : "na"},
-					"password" : {"type" : "string", "null_value" : "na"},
-					"updated" : {"type" : "date", "format" : "yyyy/MM/dd", "index" : "analyzed", "null_value" : "now"},
-					"created" : {"type" : "date", "format" : "yyyy/MM/dd", "index" : "analyzed", "null_value" : "now"}
-				}
-			}
-		}
-	}
-
-}, function(err, result) {});
-
+$.cluster = new couchbase.Cluster('couchbase://127.0.0.1/');
+$.bucket = $.cluster.openBucket('core');
+$.query = couchbase.N1qlQuery;

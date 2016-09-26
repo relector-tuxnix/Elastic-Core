@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
+    "couchbase": "^2.2.2",
     "elasticsearch": "^10.0.1",
     "handlebars": "^4.0.5",
     "handlebars-form-helpers": "^0.1.3",

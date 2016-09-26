@@ -21,7 +21,7 @@ $.postLogin = function() {
 
 	var self = this;
 
-	common.EBLogin(self, function(result) {
+	common.ECLogin(self, function(result) {
 
 		if(result.success == false) {
 
@@ -47,7 +47,7 @@ $.logout = function() {
 	common.model = {};
 	common.model.page = common.routes.logout.page;
 
-	common.EBLogout(self);
+	common.ECLogout(self);
 
 	self.redirect(common.pages.home.uri);
 };

@@ -5,6 +5,9 @@
  */
 var errorHandler = function(jqXHR, status, error) {
 
+	/* Hide all other windows before showing the error */
+	$(".modal").hide();
+
 	if(status == "error") {
 
 		if(error == "Unauthorized") {
@@ -44,8 +47,8 @@ var arrayIntoUL = function(ulElement, jsList) {
 		$(newLI).text(jsList[i]);
 
 		$(ulElement).append(newLI);
-
 	}	
 
+	console.log(ulElement);
 	$(ulElement).show();
 };

@@ -2,37 +2,21 @@ var $ = exports;
 
 var common = require('../../elastic-core/common.js');
 
+
 $.apiGetMany = function() {
 
 	var self = this;
 
+	var limit = self.post.limit;
+	var last = self.post.last;
 	var from = self.post.from;
 	var to = self.post.to;
-	var last = self.post.last;
-       	var index = self.post.index;
-        var type = self.post.type;
-	var limit = self.post.limit;
-	var sort = self.post.sort;
+	var order = self.post.order;
+	var type = self.post.type;
 	
-	var body = {
-		"query" : {	
-			"bool" : {
-				"must" : []
-			}
-		}
-	};
+	common.ECGet({'_type' : type}, limit, last, from, to, order, function(results) {
 
-	if(from != "" && to != "") {
-		body.query.bool.must.push({"range" : { "created" : { "from" : from, "to" : to }}});
-	}
-
-	if(last != null && last != "") {
-		body.query.bool.must.push({"range" : { "key" : { "lt" : last }}});
-	}
-
-	common.EBGetMany(index, type, body, limit, sort, function(results) {
-
-		if(results.success == false) {
+		if(results.error == true) {
 			
 			self.view500(results.message);
 			
@@ -43,17 +27,16 @@ $.apiGetMany = function() {
 	});
 };
 
+
 $.apiGetById = function() {
 
 	var self = this;
 
-	var id = self.post.id;
-       	var index = self.post.index;
-        var type = self.post.type;
+	var key = self.post.key;
 
-	common.EBGetById(id, index, type, function(results) {
+	common.ECGet({'_key' : key}, 1, '', '', '', '', function(results) {
 
-		if(results.success == false) {
+		if(results.error == true) {
 			
 			self.view500(results.message);
 			
@@ -64,17 +47,16 @@ $.apiGetById = function() {
 	});
 };
 
+
 $.apiDeleteById = function() {
 
 	var self = this;
 
-	var id = self.post.id;
-	var index = self.post.index;
-	var type = self.post.type;
+	var key = self.post.key;
 
-	common.EBDelete(id, index, type, function(results) {
+	common.ECDelete(key, function(results) {
 
-		if(results.success == false) {
+		if(results.error == true) {
 	
 			self.view500(results.message);
 
@@ -85,24 +67,26 @@ $.apiDeleteById = function() {
 	});
 };
 
+
 $.apiLogin = function() {
 
 	var self = this;
 
-	var email = self.post.email;
+	var email = self.post.email.toUpperCase();
 	var password = self.post.password;
 
-	common.EBLogin(self, email, password, function(result) {
+	common.ECLogin(self, email, password, function(result) {
 
 		self.json(result);
 	});
 };
 
+
 $.apiRegister = function() {
 
 	var self = this;
 
-	var email = self.post.email;
+	var email = self.post.email.toUpperCase();
 	var password = self.post.password;
 	var confirm = self.post.confirm;
 
@@ -130,7 +114,7 @@ $.apiRegister = function() {
 
 	if(failed == undefined) {
 
-		common.EBRegister(self, email, password, function(result) {
+		common.ECRegister(self, email, password, function(result) {
 
 			self.json(result);
 		});
@@ -141,28 +125,27 @@ $.apiRegister = function() {
 	}
 };
 
+
 $.apiLogout = function() {
 
 	var self = this;
 
-	common.EBLogout(self);
+	common.ECLogout(self);
 
 	self.json({ message: "Successfully logged off." });
 };
 
+/*
 $.apiSearch = function() {
 
 	var self = this;
 
 	var query = self.post.query;
-	var last = self.post.last;
 	var fields = self.post["fields[]"];
+	var table = self.post.table;
 	var limit = self.post.limit;
-	var sort = self.post.sort;
-	var index = self.post.index;
-	var type = self.post.type;
 
-	common.EBSearch(query, last, limit, fields, sort, index, type, {}, function(results) {
+	common.ECSearch(query, table, fields, limit, function(results) {
 
 		if(results.success == false) {
 			
@@ -174,6 +157,7 @@ $.apiSearch = function() {
 		}
 	});
 };
+*/
 
 $.apiSetLanguage = function() {
 

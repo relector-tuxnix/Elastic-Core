@@ -4,8 +4,10 @@ var hb = require('handlebars');
 var path = require('path');
 var hbs = require('handlebars-form-helpers');
 var val = require("validate.js");
+var cuid = require('cuid');
+var couchbase = require('couchbase')
 
-var hbh = require('./helpers.js');
+var helper = require('./helpers.js');
 var db = require('./database.js');
 
 hbs.register(hb);
@@ -33,6 +35,8 @@ F.once('load', function() {
 
 	$.defaultTheme = F.config['default-theme'];
 
+	console.log("LOADING ELASTIC-CORE!");
+
 	/* Have to hard code the path as core does not do themes and there can only be one configuration */
 	var pages = require('./elastic-core-pages.js');
 
@@ -41,25 +45,23 @@ F.once('load', function() {
 	/* We don't want to process routes as they are processed by the child site */
 	//$.processRoutes();
 
-	$.EBSetupAuthentication();
-
-	console.log("LOADED ELASTIC-CORE!");
+	$.ECSetupAuthentication();
 });
 
 
-$.EBSetupAuthentication = function() { 
+$.ECSetupAuthentication = function() { 
 
 	var auth = MODULE('authorization');
 
 	auth.onAuthorization = function(user, callback) {
 
-		$.EBGetById(user.id, 'users', 'user', function(result) {
+		$.ECGet({"_type" : "user", '_id' : user.id }, 1, '', '', '', '', function(result) {
 
 			if(result.success == true) {
 
-				var storedUser = result.message;
+				var storedUser = result.message.pop();
 
-				auth.comparePassword(user.password, storedUser.password, function(err, isMatch) {
+				auth.comparePassword(user.password, storedUser["_password"], function(err, isMatch) {
 					
 					if(isMatch == true) {
 
@@ -72,6 +74,7 @@ $.EBSetupAuthentication = function() {
 				});
 
 			} else {
+
 				callback(null);
 			}
 		});
@@ -147,11 +150,11 @@ $.processRoutes = function() {
 		if(route.active == true) {
 	
 			/* Lets get the controller now that everything has actually loaded... we don't want circular reference issues! */
-			var cont = "require('../controllers/" + route.controller + "')." + key;
+			var cont = `require('../controllers/${route.controller}').${key}`;
 
 			controller = eval(cont);
 
-			console.log("REGISTERED MAPPING: " + key + " -> " + cont);
+			console.log(`REGISTERED MAPPING: ${key} -> ${route.url} -> ${cont}`);
 
 			F.route(route.url, controller, route.flags, route.length, route.middleware, route.timeout, route.options);
 		}	
@@ -225,120 +228,185 @@ $.make = function(self, page) {
 	return out;
 };
 
-$.EBGetMany = function(index, type, body, limit, sort, callback)
-{
+
+$.ECStore = function(key, data, callback) {
+
+	var now = new Date().format('yyyy-MM-dd HH:mm:ss.sss');
+	var created = false;
+
+	if(key == null || key == '') {
+
+		key = cuid();
+		data._created = now; 
+		created = true;
+	}
+
+	data._updated = now;
+	data._key = key;
+
+	/* We want to merge objects not over-ride the existing object */
+	$.ECGet({"_key" : key}, 1, '', '', '', '', function(result) { 
+
+		if(result.error == true) {
+
+			callback(result);
+
+			return;
+		}
+
+		if(result.success == true) {
+
+			data = helper.mergeDicts(result.message.pop(), data);
+		}
+
+		db.bucket.upsert(key, data, function(err, response) {
+
+			if(err == null) {
+				
+				callback({success: true, error: false, message: ["Stored."], created: created, key: key});
+				
+			} else {
+
+				console.log(err);
+
+				callback({success: false, error: true, message: ["An error has occurred."]});
+			}
+		});
+	});
+};
+
+
+$.ECDelete = function(key, callback) {
+
+	db.bucket.remove(key, function(err, response) {
+
+		if(err == null) {
+
+			callback({success: true, error: false, message: ["Deleted"]}); 
+
+		} else {
+
+			console.log(err);
+
+			callback({success: false, error: true, message: ["An error has occurred."]});
+		}
+	});
+};
+
+
+$.ECGet = function(data, limit, last, from, to, order, callback) {
+
+	if(limit == null || limit == "") { 
+		limit = 0;
+	}
+
+        if(limit < 1 || limit > $.defaultLimit) {
+                limit = $.defaultLimit;
+        }
+
+	var conditions = 'WHERE ';
+
+	if(last != null && last != "") {
+
+		conditions = `WHERE _key > "${last}"`;
+	}
+
+	if(from != null && from != "" && to != null && to != "") {
+
+		conditions = `WHERE _created >= "${from}" AND _created <= "${to}"`;
+	}
+
+	var values = [];
+
+	for(var column in data) {
+
+		values.push(`${column} = "${data[column]}"`);
+	}
+
+	/* We have conditions */
+	if(values.length != 0) {
+
+		/* And pre-existing conditions */
+		if(conditions != 'WHERE ') {
+			conditions += ' AND ';
+		}
+
+		conditions += values.join(' AND ');
+	}
+
+	if(order == null || order == "") {
+		order = "ASC";
+	} else if(order != "ASC") {
+		order = "DESC";
+	}
+
+	var sql = db.query.fromString(`SELECT * FROM core ${conditions} ORDER BY _updated ${order} LIMIT ${limit}`);
+
+	/* Get all documents, even un-indexed ones */
+	sql.consistency(db.query.Consistency.REQUEST_PLUS);;
+
+	console.log(sql);
+	
+	db.bucket.query(sql, function(err, response) {
+
+		if(err == null) {
+
+			if(response.length == 0) {
+
+				callback({success: false, error: false, message: []});
+
+			} else {
+
+				callback({success: true, error: false, message: helper.cleanResponse(response)});
+			}
+
+		} else {
+
+			console.log(err);
+
+			callback({success: false, error: true, message: ["An error has occurred."]});
+		}
+	});
+};
+
+/*
+$.ECSearch = function(regex, table, columns, limit, callback) {
+
 	if(limit == null || limit == "") {
 		limit = 0;
 	}
 
-	 //Check if submitted limit is within specified bounds
+	//Check if submitted limit is within specified bounds
         if(limit < 1 || limit > $.defaultLimit) {
-                limit = $.defaultLimit;
+		limit = $.defaultLimit;
         } 
 
-	db.client.search({
-		index: index,
-		type: type,
-		sort: sort,
-		size: limit,
-		body: body
-	}, function (err, response) {
+	var sql = `SELECT CELLS ${columns} FROM ${table} WHERE VALUE REGEXP '${regex}' LIMIT ${limit}`;
 
-		if(err == null) {
+	db.client.hql_query(db.ns, sql, function(err, response) {
 
-			var items = [];
+		if(err == null && response != null) {
 
-			for(var i = 0; i < response.hits.hits.length; i++) {
-
-				items.push(response.hits.hits[i]._source);
-			}
-
-			callback({success: true, message: items}); 
-
-		} else {
-
-			console.log(err);
-
-			callback({success: false, message: "An error has occurred."});
-		}
-	});
-};
-
-$.EBGetById = function(id, index, type, callback) {
-
-	db.client.get({
-		index: index,
-		type: type,
-		size: 1,
-		id: id
-	}, function (err, response) {
-	
-		if(err == null && response != null && response._source !=  null) {
-
-			callback({success: true, message: response._source}); 
-
-		} else {
-
-			console.log(err);
-
-			callback({success: false, message: "An error has occurred."});
-		}
-	});	
-};
-
-$.EBIndex = function(id, body, index, type, callback) {
-
-	db.client.index({
-		index: index,
-		type: type,
-		id: id,
-		body: body,
-		refresh: true
-	}, function(err, response) {
-
-		if(err == null) {
+			if(response.cells.length == 0) {
 			
-			if(response.created == true) {
-
-				callback({success: true, message: "Saved.", created: true});
+				callback({success: false, message: ["No items found."]});
 
 			} else {
 
-				callback({success: true, message: "Updated.", created: false});
-			}	
-			
-		} else {
-
-			console.log(err);
-
-			callback({success: false, message: "An error has occurred.", created: false});
-		}
-	});
-};
-
-$.EBDelete = function(id, index, type, callback)
-{
-	db.client.delete({
-		index: index,
-		type: type,
-		id: id,
-		refresh: true
-	}, function (err, response) {
-
-		if(err == null) {
-
-			callback({success: true, message: "Deleted."});
+				$.ECFetchComplete(table, response.cells, callback);
+			}
 
 		} else {
 
 			console.log(err);
 
-			callback({success: false, message: "Failed to delete."});
+			callback({success: false, message: ["An error has occurred."]});
 		}
 	});
 };
+*/
 
-$.EBLogin = function(self, id, password, callback) {
+$.ECLogin = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
@@ -355,22 +423,24 @@ $.EBLogin = function(self, id, password, callback) {
 	});
 };
 
-$.EBLogout = function(self) {
+
+$.ECLogout = function(self) {
 
 	var auth = self.module('authorization');
 
-	auth.logoff(self, self.user.id);
+	auth.logoff(self, self.user["_id"]);
 };
 
-$.EBRegister = function(self, id, password, callback) {
+
+$.ECRegister = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
-	$.EBGetById(id, 'users', 'user', function(result) {
+	$.ECGet({ '_type' : 'user', '_id' : id }, 1, '', '', '', '', function(result) {
 
 		if(result.success == true) {
 
-			callback({success: false, message: ["Username already exists."]});
+			callback({success: false, error: false, message: ["Username already exists."]});
 
 		} else {
 
@@ -380,98 +450,27 @@ $.EBRegister = function(self, id, password, callback) {
 
 					console.log(err);
 
-					callback({success: false, message: ["An error has occurred. This has been reported. Thanks!"]});
+					callback({success: false, error: true, message: ["An error has occurred."]});
 		
 				} else {
 
-					var timestamp = new Date().format('yyyy/MM/dd');
+					var data = {"_type" : "user", "_id" : id, "_password" : hash};
 
-					db.client.index({
-						index: 'users',
-						type: 'user',
-						id: id,
-						refresh: true,
-						body: {
-							id: id,
-							password: hash,
-							updated: timestamp,
-							created: timestamp
-						}
-					}, function (err, response) {
+					$.ECStore('', data, function(result) {
 
-						if(err == null) {
+						if(result.success == true) {
 							
-							callback({success: true, message: ["User registration successful."]});
+							callback({success: true, error: false, message: ["User registration successful."]});
 							
 						} else {
 
 							console.log(err);
 
-							callback({success: false, message: ["An error has occurred. This has been reported. Thanks!"]});
+							callback({success: false, error: true, message: ["An error has occurred."]});
 						}
 					});
 				}
 			});
-		}
-	});
-};
-
-$.EBSearch = function(query, last, limit, fields, sort, index, type, filter, callback) {
-
-	var body = {};
-	
-	body.filter = filter;
-
-	body.query = {
-		"multi_match" : {  
-        		"fields" : fields,
-   			"query" : query.toLowerCase(),
-			"fuzziness" : "AUTO"
-		}
-	};
-
-	if(last != null && last != "") {
-
-		body.filter = {
-			"bool" : {
-				"must" : [
-					{"range" : { "key" : { "lt" : last }}}
-				]
-			}
-		};
-	}
-
-	if(limit == null || limit == "") {
-		limit = 0;
-	}
-
-	//Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > $.defaultLimit) {
-		limit = $.defaultLimit;
-        } 
-
-	db.client.search({
-		index: index,
-		type: type,
-		sort: sort,
-		size: limit,
-		body: body
-	}, function (error, response) {
-
-		if(error == null) {
-
-			var items = [];
-
-			for(var i = 0; i < response.hits.hits.length; i++) {
-
-				items.push(response.hits.hits[i]._source);
-			}
-
-			callback({success: true, message: items}); 
-
-		} else {
-
-			callback({success: false, message: "An error has occurred."});
 		}
 	});
 };
