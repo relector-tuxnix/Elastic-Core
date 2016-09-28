@@ -8,21 +8,10 @@ var errorHandler = function(jqXHR, status, error) {
 	/* Hide all other windows before showing the error */
 	$(".modal").hide();
 
-	if(status == "error") {
+	arrayIntoUL($("#error-message"), jqXHR.responseJSON.message);
 
-		if(error == "Unauthorized") {
-			$('#error-message').text('You are no longer logged in!');
-		} else {
-			$('#error-window').text('An error occured!');
-		}
-
-		$('#error-message').show();
-		$('#error-window').show();
-
-	} else {
-		console.log(status);
-		console.log(error);
-	} 
+	$('#error-message').show();
+	$('#error-window').show();
 };
 
 
@@ -49,6 +38,5 @@ var arrayIntoUL = function(ulElement, jsList) {
 		$(ulElement).append(newLI);
 	}	
 
-	console.log(ulElement);
 	$(ulElement).show();
 };
