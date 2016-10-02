@@ -332,10 +332,6 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		conditions = `WHERE ${column} >= "${from}" AND ${column} <= "${to}"`;
 	}
 
-	console.log(data);
-	console.log(Array.isArray(data));
-	console.log(data.length);
-
 	if(data !== null && typeof(data) === 'object' && Object.keys(data).length != 0) {
 
 		var values = [];
