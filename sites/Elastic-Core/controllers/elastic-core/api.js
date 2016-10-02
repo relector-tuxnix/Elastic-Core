@@ -7,14 +7,14 @@ $.apiGetMany = function() {
 
 	var self = this;
 
+	var range = self.post["range[]"];
+	var last = self.post["last[]"];
+	var category = self.post.category;
+	var order = self.post["order[]"];
 	var limit = self.post.limit;
-	var last = self.post.last;
-	var from = self.post.from;
-	var to = self.post.to;
-	var order = self.post.order;
 	var type = self.post.type;
 	
-	common.ECGet({'_type' : type}, limit, last, from, to, order, function(results) {
+	common.ECGet({'_type' : type}, limit, last, range, order, function(results) {
 
 		if(results.error == true) {
 			
@@ -34,7 +34,7 @@ $.apiGetById = function() {
 
 	var key = self.post.key;
 
-	common.ECGet({'_key' : key}, 1, '', '', '', '', function(results) {
+	common.ECGet({'_key' : key}, 1, [], [], [], function(results) {
 
 		if(results.error == true) {
 			

@@ -22,7 +22,7 @@ common.ECStore('', data, function(result) {
 		console.log(result);
 
 		/* Test get */
-		common.ECGet({"_key" : data["_key"]}, 100, '', '', '', '', function(result) {
+		common.ECGet({"_key" : data["_key"]}, 100, [], [], [], [], function(result) {
 
 			console.log("GET RESULT:");
 			console.log(result);

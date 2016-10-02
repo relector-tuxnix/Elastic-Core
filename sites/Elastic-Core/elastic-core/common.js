@@ -55,7 +55,7 @@ $.ECSetupAuthentication = function() {
 
 	auth.onAuthorization = function(user, callback) {
 
-		$.ECGet({"_type" : "user", '_id' : user.id }, 1, '', '', '', '', function(result) {
+		$.ECGet({"_type" : "user", '_id' : user.id }, 1, [], [], [], function(result) {
 
 			if(result.success == true) {
 
@@ -245,7 +245,7 @@ $.ECStore = function(key, data, callback) {
 	data._key = key;
 
 	/* We want to merge objects not over-ride the existing object */
-	$.ECGet({"_key" : key}, 1, '', '', '', '', function(result) { 
+	$.ECGet({"_key" : key}, 1, [], [], [], function(result) { 
 
 		if(result.error == true) {
 
@@ -293,54 +293,79 @@ $.ECDelete = function(key, callback) {
 	});
 };
 
+/*
+ * Need to ensure SQL injection is prevented.
+ */
+$.ECGet = function(data, limit, last, range, order, callback) {
 
-$.ECGet = function(data, limit, last, from, to, order, callback) {
+	if(isNaN(limit)) { 
 
-	if(limit == null || limit == "") { 
 		limit = 0;
-	}
 
-        if(limit < 1 || limit > $.defaultLimit) {
+	} else if(limit < 1 || limit > $.defaultLimit) {
+
                 limit = $.defaultLimit;
         }
 
 	var conditions = 'WHERE ';
 
-	if(last != null && last != "") {
+	if(Array.isArray(last) && last.length == 3) {
 
-		conditions = `WHERE _key > "${last}"`;
-	}
+		var column = last[0];
+		var direction = last[1];
+		var value = last[2];
 
-	if(from != null && from != "" && to != null && to != "") {
+		if(direction != ">" && direction != "<") { 
 
-		conditions = `WHERE _created >= "${from}" AND _created <= "${to}"`;
-	}
-
-	var values = [];
-
-	for(var column in data) {
-
-		values.push(`${column} = "${data[column]}"`);
-	}
-
-	/* We have conditions */
-	if(values.length != 0) {
-
-		/* And pre-existing conditions */
-		if(conditions != 'WHERE ') {
-			conditions += ' AND ';
+			direction = ">";
 		}
 
-		conditions += values.join(' AND ');
+		conditions = `WHERE ${column} ${direction} "${value}"`;
 	}
 
-	if(order == null || order == "") {
-		order = "ASC";
-	} else if(order != "ASC") {
-		order = "DESC";
+	if(Array.isArray(range) && range.length == 3) {
+
+		var column = range[0];
+		var from = range[1];
+		var to = range[2];
+
+		conditions = `WHERE ${column} >= "${from}" AND ${column} <= "${to}"`;
 	}
 
-	var sql = db.query.fromString(`SELECT * FROM core ${conditions} ORDER BY _updated ${order} LIMIT ${limit}`);
+	console.log(data);
+	console.log(Array.isArray(data));
+	console.log(data.length);
+
+	if(data !== null && typeof(data) === 'object' && Object.keys(data).length != 0) {
+
+		var values = [];
+
+		for(var column in data) {
+
+			values.push(`${column} = "${data[column]}"`);
+		}
+
+		/* We have conditions */
+		if(values.length != 0) {
+
+			/* And pre-existing conditions */
+			if(conditions != 'WHERE ') {
+				conditions += ' AND ';
+			}
+
+			conditions += values.join(' AND ');
+		}
+	}
+
+	if(Array.isArray(order) && order.length == 2) {
+
+		var column = order[0];	
+		var direction = order[1];
+
+		conditions += ` ORDER BY ${column} ${direction}`
+	}
+
+	var sql = db.query.fromString(`SELECT * FROM core ${conditions} LIMIT ${limit}`);
 
 	/* Get all documents, even un-indexed ones */
 	sql.consistency(db.query.Consistency.REQUEST_PLUS);;
@@ -436,7 +461,7 @@ $.ECRegister = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
-	$.ECGet({ '_type' : 'user', '_id' : id }, 1, '', '', '', '', function(result) {
+	$.ECGet({ '_type' : 'user', '_id' : id }, 1, [], [], [], function(result) {
 
 		if(result.success == true) {
 
