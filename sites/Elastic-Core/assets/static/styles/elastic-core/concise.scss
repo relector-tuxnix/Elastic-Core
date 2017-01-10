@@ -1,37 +1,69 @@
-/**
- * Concise Framework
- * https://github.com/ConciseCSS/concise.css
- *
- * Copyright 2015 Concise Team
- * Released under the MIT license
- * http://opensource.org/licenses/MIT
- *
- */
-
+// 
 // Globals
-@import './assets/static/styles/elastic-core/core/globals/globals';
-@import './assets/static/styles/elastic-core/core/globals/functions';
-@import './assets/static/styles/elastic-core/core/globals/mixins';
+// --------------------------------------------------
 
-// Natives
-@import './assets/static/styles/elastic-core/core/layout/base';
-@import './assets/static/styles/elastic-core/core/layout/blockquotes';
-@import './assets/static/styles/elastic-core/core/layout/buttons';
-@import './assets/static/styles/elastic-core/core/layout/forms';
-@import './assets/static/styles/elastic-core/core/layout/headings';
-@import './assets/static/styles/elastic-core/core/layout/lists';
-@import './assets/static/styles/elastic-core/core/layout/print';
-@import './assets/static/styles/elastic-core/core/layout/tables';
-@import './assets/static/styles/elastic-core/core/layout/type';
+@import './assets/static/styles/elastic-core/globals/pow-function';
+@import './assets/static/styles/elastic-core/globals/settings';
+@import './assets/static/styles/elastic-core/globals/getColor-function';
+@import './assets/static/styles/elastic-core/globals/typeScale-function';
 
-// Utils
-@import './assets/static/styles/elastic-core/core/utils/atgrid';
-@import './assets/static/styles/elastic-core/core/utils/colors';
-@import './assets/static/styles/elastic-core/core/utils/conditional-styling';
-@import './assets/static/styles/elastic-core/core/utils/helpers';
-
-// Add-Ons
-@import './assets/static/styles/elastic-core/addons/concise-ui/concise-ui';
-
+// 
 // Extra Colors
-@import "./assets/static/styles/elastic-core/cms/ColorMeSASS.scss";
+// --------------------------------------------------
+
+@import "./assets/static/styles/elastic-core/colours/color-me-sass.scss";
+
+
+// 
+// Utils
+// --------------------------------------------------
+
+@import './assets/static/styles/elastic-core/utils/margins';
+@import './assets/static/styles/elastic-core/utils/paddings';
+@import './assets/static/styles/elastic-core/utils/borders';
+@import './assets/static/styles/elastic-core/utils/colors';
+@import './assets/static/styles/elastic-core/utils/hide-show';
+@import './assets/static/styles/elastic-core/utils/type-scale';
+@import './assets/static/styles/elastic-core/utils/typography';
+@import './assets/static/styles/elastic-core/utils/position';
+@import './assets/static/styles/elastic-core/utils/display';
+@import './assets/static/styles/elastic-core/utils/columns';
+
+
+// 
+// Natives
+// --------------------------------------------------
+
+@import './assets/static/styles/elastic-core/src/base';
+@import './assets/static/styles/elastic-core/src/headings';
+@import './assets/static/styles/elastic-core/src/lists';
+@import './assets/static/styles/elastic-core/src/forms';
+@import './assets/static/styles/elastic-core/src/tables';
+@import './assets/static/styles/elastic-core/src/atgrid';
+@import './assets/static/styles/elastic-core/src/print';
+
+
+//
+// Components
+// --------------------------------------------------
+
+@import './assets/static/styles/elastic-core/components/alert-box';
+@import './assets/static/styles/elastic-core/components/breadcrumb-nav';
+@import './assets/static/styles/elastic-core/components/button-group';
+@import './assets/static/styles/elastic-core/components/card-box';
+@import './assets/static/styles/elastic-core/components/dropdown-button';
+@import './assets/static/styles/elastic-core/components/progress-bar';
+@import './assets/static/styles/elastic-core/components/modals';
+
+
+//
+// Elements
+// --------------------------------------------------
+
+@import './assets/static/styles/elastic-core/elements/tag';
+@import './assets/static/styles/elastic-core/elements/button';
+@import './assets/static/styles/elastic-core/elements/spinner';
+
+
+
+

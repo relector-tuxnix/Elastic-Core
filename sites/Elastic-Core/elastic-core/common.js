@@ -307,7 +307,7 @@ $.ECGet = function(data, limit, last, range, order, callback) {
                 limit = $.defaultLimit;
         }
 
-	var conditions = 'WHERE ';
+	var conditions = [];
 
 	if(Array.isArray(last) && last.length == 3) {
 
@@ -320,7 +320,7 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 			direction = ">";
 		}
 
-		conditions = `WHERE ${column} ${direction} "${value}"`;
+		conditions.push(`${column} ${direction} "${value}"`);
 	}
 
 	if(Array.isArray(range) && range.length == 3) {
@@ -329,39 +329,28 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		var from = range[1];
 		var to = range[2];
 
-		conditions = `WHERE ${column} >= "${from}" AND ${column} <= "${to}"`;
+		conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
 	}
 
 	if(data !== null && typeof(data) === 'object' && Object.keys(data).length != 0) {
 
-		var values = [];
-
 		for(var column in data) {
 
-			values.push(`${column} = "${data[column]}"`);
-		}
-
-		/* We have conditions */
-		if(values.length != 0) {
-
-			/* And pre-existing conditions */
-			if(conditions != 'WHERE ') {
-				conditions += ' AND ';
-			}
-
-			conditions += values.join(' AND ');
+			conditions.push(`${column} = "${data[column]}"`);
 		}
 	}
+
+	var allConditions = `WHERE ${conditions.join(' AND ')}`;
 
 	if(Array.isArray(order) && order.length == 2) {
 
 		var column = order[0];	
 		var direction = order[1];
 
-		conditions += ` ORDER BY ${column} ${direction}`
+		allConditions += ` ORDER BY ${column} ${direction}`
 	}
 
-	var sql = db.query.fromString(`SELECT * FROM core ${conditions} LIMIT ${limit}`);
+	var sql = db.query.fromString(`SELECT * FROM core ${allConditions} LIMIT ${limit}`);
 
 	/* Get all documents, even un-indexed ones */
 	sql.consistency(db.query.Consistency.REQUEST_PLUS);;

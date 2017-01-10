@@ -1,4 +1,5 @@
 var sass = require('node-sass');
+var postcss = require('postcss');
 var fs = require('fs');
 
 exports.install = function() {
@@ -35,10 +36,18 @@ function scssCompiler(req, res, isValidation) {
 			return;
 		}
 
-		var css = sass.renderSync({ data: data.toString(), outputStyle: 'compressed' });
+		var compiledSass = sass.renderSync({ data: data.toString(), outputStyle: 'compressed' }).css;
+
+		var css = postcss([
+			require('postcss-input-range'),
+			require('postcss-lh'),
+			require('postcss-custom-media'),
+			require('postcss-media-minmax'),
+			require('autoprefixer')
+		]).process(compiledSass).css;
 
 		// write compiled content into the temporary file
-		fs.writeFileSync(filename, css.css);
+		fs.writeFileSync(filename, css);
 
 		// this function affect framework.isProcessed() function
 		self.responseFile(req, res, filename);
