@@ -7,7 +7,6 @@ A simple website core using in total.js and couchbase. This is just a base websi
 
 * [Node.js](https://nodejs.org/)
 * [NPM.js](https://www.npmjs.com/)
-* [Elastic Search](https://www.elastic.co/downloads/elasticsearch)
 * [Total.js](https://www.totaljs.com)
 * [Couchbase](https://www.couchbase.com/)
 * [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
