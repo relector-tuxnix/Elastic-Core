@@ -1,19 +1,19 @@
 
 # Elastic-Core
-A simple website core using in total.js and elastic-search. This is just a base website consisting of shared components that can be used to build bigger and better websites!
+A simple website core using in total.js and couchbase. This is just a base website consisting of shared components that can be used to build bigger and better websites!
 
 
 ## Requirements
 
 * [Node.js](https://nodejs.org/)
 * [NPM.js](https://www.npmjs.com/)
-* [Elastic Search](https://www.elastic.co/downloads/elasticsearch)
 * [Total.js](https://www.totaljs.com)
-* [ElasticSearch.js](https://github.com/elastic/elasticsearch-js)
+* [Couchbase](https://www.couchbase.com/)
 * [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
 * [Handlebars.js](http://handlebarsjs.com/)
 * [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
 * [Validate.js](http://validatejs.org/)
+* [Node-Sass](https://github.com/sass/node-sass)
 
 ## Linux Installation
 
@@ -25,13 +25,9 @@ Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
 
-Get ElasticSearch from the offical site
+Get Couchbase from the offical site and install
 
-    $> wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-2.1.0.tar.gz
-
-Extract ElasticSearch
-
-    $> tar -zxf elasticsearch-2.1.0.tar.gz
+    https://www.couchbase.com/
 
 Enter the Elastic-Core nodejs project
 
@@ -41,7 +37,7 @@ Install the following node modules
 
     $> npm install total.js --save
 
-    $> npm install elasticsearch --save
+    $> npm install couchbase --save
 
     $> npm install bcrypt-nodejs --save
 
@@ -50,14 +46,12 @@ Install the following node modules
     $> npm install handlebars-form-helpers --save
 
     $> npm install validate.js --save
+    
+    $> npm install node-sass --save
  
 Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
-
-Start Elastic Search
-
-    $> ./elasticsearch-2.1.0/bin/elasticsearch
 
 Start Elastic-Core
 
