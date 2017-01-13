@@ -66,7 +66,15 @@ $.handleError = function(self, code) {
 	if(self.req.url.contains('api')) {
 
 		self.status = code;
-		self.json({ code : code, status : utils.httpStatus(code).replace(code + ": ", ""), message: self.exception });
+		
+		/* The front end exception view expects an array of messages */
+		if(Array.isArray(self.exception) == true) {
+			message = self.exception;	
+		} else {
+			message = [self.exception];
+		}
+
+		self.json({ code : code, status : utils.httpStatus(code).replace(code + ": ", ""), message: message });
 
 	} else {
 

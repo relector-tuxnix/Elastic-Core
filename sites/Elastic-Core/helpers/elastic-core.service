@@ -1,0 +1,14 @@
+[Unit]
+Description=elastic-core
+
+[Service]
+ExecStart=/var/www/elastic-core/index.js
+Restart=always
+User=nobody
+Group=nobody
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/var/www/elastic-core
+
+[Install]
+WantedBy=multi-user.target
