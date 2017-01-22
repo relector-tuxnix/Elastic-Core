@@ -55,7 +55,7 @@ $.ECSetupAuthentication = function() {
 
 	auth.onAuthorization = function(user, callback) {
 
-		$.ECGet({"_type" : "user", '_id' : user.id }, 1, [], [], [], function(result) {
+		$.ECGet([`_type = "user"`, `_id = "${user.id}"`], 1, [], [], [], function(result) {
 
 			if(result.success == true) {
 
@@ -83,7 +83,7 @@ $.ECSetupAuthentication = function() {
 
 
 /*
-	Enable priority sorting of routes to allow site inheritance	
+ * Enable priority sorting of routes to allow site inheritance	
  */
 $.registerPages = function(mappings) {
 	
@@ -139,7 +139,7 @@ $.registerPages = function(mappings) {
 };
 
 /*
-	Now we have all the routes let total.js know about them.
+ * Now we have all the routes let total.js know about them.
  */
 $.processRoutes = function() {
 
@@ -162,7 +162,7 @@ $.processRoutes = function() {
 };
 
 /*
-	Lookup the locale keyword and return it.
+ * Lookup the locale keyword and return it.
  */
 $.locale = function(keyword) {
 
@@ -245,7 +245,7 @@ $.ECStore = function(key, data, callback) {
 	data._key = key;
 
 	/* We want to merge objects not over-ride the existing object */
-	$.ECGet({"_key" : key}, 1, [], [], [], function(result) { 
+	$.ECGet([`_key = "${key}"`], 1, [], [], [], function(result) { 
 
 		if(result.error == true) {
 
@@ -332,11 +332,11 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
 	}
 
-	if(data !== null && typeof(data) === 'object' && Object.keys(data).length != 0) {
+	if(Array.isArray(data) && data.length != 0) {
 
-		for(var column in data) {
+		for(var i = 0; i < data.length; i++) {
 
-			conditions.push(`${column} = "${data[column]}"`);
+			conditions.push(data[i]);
 		}
 	}
 
@@ -350,14 +350,20 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		allConditions += ` ORDER BY ${column} ${direction}`
 	}
 
-	var sql = db.query.fromString(`SELECT * FROM core ${allConditions} LIMIT ${limit}`);
+	$.ECQuery(`SELECT core.* FROM core ${allConditions} LIMIT ${limit}`, callback);
+};
 
-	/* Get all documents, even un-indexed ones */
-	sql.consistency(db.query.Consistency.REQUEST_PLUS);;
 
-	console.log(sql);
+$.ECQuery = function(query, callback) {
+
+	console.log(query);
+
+	var sql = db.query.fromString(query);
 	
-	db.bucket.query(sql, function(err, response) {
+	/* Get all documents, even un-indexed ones */
+	sql.consistency(db.query.Consistency.REQUEST_PLUS);
+
+	db.bucket.query(sql, function(err, response, meta) {
 
 		if(err == null) {
 
@@ -367,7 +373,7 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 
 			} else {
 
-				callback({success: true, error: false, message: helper.cleanResponse(response)});
+				callback({success: true, error: false, message: response});
 			}
 
 		} else {
@@ -379,42 +385,37 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 	});
 };
 
-/*
-$.ECSearch = function(regex, table, columns, limit, callback) {
 
-	if(limit == null || limit == "") {
-		limit = 0;
-	}
+$.ECSearch = function(keywords, limit, callback) {
 
-	//Check if submitted limit is within specified bounds
-        if(limit < 1 || limit > $.defaultLimit) {
-		limit = $.defaultLimit;
-        } 
+	var searchQuery = db.couchbase.SearchQuery;
 
-	var sql = `SELECT CELLS ${columns} FROM ${table} WHERE VALUE REGEXP '${regex}' LIMIT ${limit}`;
+	var query = searchQuery.new('post-search-index', searchQuery.term(keywords));
 
-	db.client.hql_query(db.ns, sql, function(err, response) {
+	query.limit(limit);
 
-		if(err == null && response != null) {
+	db.bucket.query(query, function(err, response, meta) {
 
-			if(response.cells.length == 0) {
-			
-				callback({success: false, message: ["No items found."]});
+		if(err == null) {
+
+			if(response.length == 0) {
+
+				callback({success: false, error: false, message: []});
 
 			} else {
 
-				$.ECFetchComplete(table, response.cells, callback);
+				callback({success: true, error: false, message: response});
 			}
 
 		} else {
 
 			console.log(err);
 
-			callback({success: false, message: ["An error has occurred."]});
+			callback({success: false, error: true, message: ["An error has occurred."]});
 		}
 	});
 };
-*/
+
 
 $.ECLogin = function(self, id, password, callback) {
 
@@ -446,7 +447,7 @@ $.ECRegister = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
-	$.ECGet({ '_type' : 'user', '_id' : id }, 1, [], [], [], function(result) {
+	$.ECGet([`_type = "user"`, `_id = "${id}"`], 1, [], [], [], function(result) {
 
 		if(result.success == true) {
 

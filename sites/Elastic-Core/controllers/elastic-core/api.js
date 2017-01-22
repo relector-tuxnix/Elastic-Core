@@ -9,12 +9,11 @@ $.apiGetMany = function() {
 
 	var range = self.post["range[]"];
 	var last = self.post["last[]"];
-	var category = self.post.category;
 	var order = self.post["order[]"];
 	var limit = self.post.limit;
 	var type = self.post.type;
 	
-	common.ECGet({'_type' : type}, limit, last, range, order, function(results) {
+	common.ECGet([`_type = "${type}"`], limit, last, range, order, function(results) {
 
 		if(results.error == true) {
 			
@@ -34,7 +33,7 @@ $.apiGetById = function() {
 
 	var key = self.post.key;
 
-	common.ECGet({'_key' : key}, 1, [], [], [], function(results) {
+	common.ECGet([`_key = "${key}"`], 1, [], [], [], function(results) {
 
 		if(results.error == true) {
 			
@@ -135,17 +134,14 @@ $.apiLogout = function() {
 	self.json({ message: "Successfully logged off." });
 };
 
-/*
+
 $.apiSearch = function() {
 
 	var self = this;
 
 	var query = self.post.query;
-	var fields = self.post["fields[]"];
-	var table = self.post.table;
-	var limit = self.post.limit;
 
-	common.ECSearch(query, table, fields, limit, function(results) {
+	common.ECSearch(query, 10, function(results) {
 
 		if(results.success == false) {
 			
@@ -157,7 +153,7 @@ $.apiSearch = function() {
 		}
 	});
 };
-*/
+
 
 $.apiSetLanguage = function() {
 

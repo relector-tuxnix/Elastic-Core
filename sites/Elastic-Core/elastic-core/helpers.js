@@ -40,19 +40,6 @@ $.registerHelper('compare', function(lvalue, operator, rvalue, options) {
 	}
 });
 
-$.cleanResponse = function(response) {
-
-	var results = [];
-
-	/* Lets merge all the response cells */
-	for(var i = 0; i < response.length; i++) {
-
-		results.push(response[i].core);
-	}
-
-	return results;
-};
-
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1

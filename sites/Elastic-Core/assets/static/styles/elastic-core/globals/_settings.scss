@@ -37,7 +37,7 @@ $transition-duration: 150ms !default;
 @custom-media --extra-large (width >= 1100px);
 @custom-media --only-small (width <= 768px);
 @custom-media --only-medium (768px < width <= 980px);
-@custom-media --only-large (980px < width);
+@custom-media --only-large (width > 980px);
 @custom-media --only-small-medium (width < 768px);
 @custom-media --only-medium-large (width > 768px);
 
@@ -78,7 +78,7 @@ $scale-ratio-secondary: $_perfect-fourth !default;
 $enable-grid: true !default;
 
 // Enable x-*, sm-*, md-*, lg-*, xl-* columns and offsets
-$full-grid: false !default;
+$full-grid: true !default;
 
 // Max width for container
 $container-width: 1200px !default;
@@ -93,7 +93,7 @@ $num-columns: 12 !default;
 $prefix: '' !default;
 
 // Create columns and offsets above this breakpoint
-$breakpoint: --small !default;
+$breakpoint: --medium !default;
 
 //
 // Color Palette

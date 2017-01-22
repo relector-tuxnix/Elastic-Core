@@ -22,6 +22,7 @@ var couchbase = require('couchbase')
 
 var $ = module.exports;
 
-$.cluster = new couchbase.Cluster('couchbase://127.0.0.1/');
+$.couchbase = couchbase;
+$.cluster = new $.couchbase.Cluster('couchbase://127.0.0.1/');
 $.bucket = $.cluster.openBucket('core');
-$.query = couchbase.N1qlQuery;
+$.query = $.couchbase.N1qlQuery;
