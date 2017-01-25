@@ -390,11 +390,19 @@ $.ECSearch = function(keywords, limit, callback) {
 
 	var searchQuery = db.couchbase.SearchQuery;
 
-	var query = searchQuery.new('post-search-index', searchQuery.term(keywords));
+	var match = searchQuery.match(keywords);
+
+	match.fuzziness(2);
+
+	var query = searchQuery.new('post-search-index', match);
 
 	query.limit(limit);
 
 	db.bucket.query(query, function(err, response, meta) {
+
+		console.log(err);
+		console.log(response);
+		console.log(meta);
 
 		if(err == null) {
 
