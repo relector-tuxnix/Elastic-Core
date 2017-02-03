@@ -4,39 +4,36 @@ var fs = require('fs');
 
 exports.install = function() {
 
-	framework.file('SCSS', scssCompiler);
+	F.accept('scss', 'text/css');
 
-	// This is called by total.js->internal.js
-	framework.onCompileStyle = function (filename, content) {
-		return content;		
-	};
-};
+	F.file(function(req, res, isValidation) {
 
-function scssCompiler(req, res, isValidation) {
-
-	if (isValidation) {
-		return req.url.indexOf('.scss') !== -1 || req.url.indexOf('.sass') !== -1;
-	}
-
-	var self = this;
-
-	// create temporary filename. we'll compile file
-	var filename = self.path.temp(req.url.replace(/\//g, '-').substring(1));
-
-	// Cache for RELEASE MODE ONLY
-	if (framework.isProcessed(filename)) {
-		self.responseFile(req, res, filename);
-		return;
-	}
-
-	fs.readFile(self.path.public(req.url), function(err, data) {
-
-		if (err) {
-			self.response404(req, res);
-			return;
+		if(isValidation) {
+			return req.extension === 'scss';
 		}
 
-		var compiledSass = sass.renderSync({ data: data.toString(), outputStyle: 'compressed' }).css;
+		F.exists(req, res, 20, function(next, tmp) {
+
+			var filename = F.path.public(req.url);
+
+			fs.readFile(filename, function(err, data) {
+
+				if(err) {
+					next();
+					res.throw404();
+					return;
+				}
+
+				var content = F.onCompileStyle(filename, data.toString('utf8'));
+
+				F.responseContent(req, res, 200, content, 'text/css', true);
+			});
+		});
+	});
+
+	F.onCompileStyle = function(filename, content) {
+
+		var compiledSass = sass.renderSync({ file: filename, data: content, outputStyle: 'compressed' }).css.toString('utf8');
 
 		var css = postcss([
 			require('postcss-input-range'),
@@ -46,10 +43,6 @@ function scssCompiler(req, res, isValidation) {
 			require('autoprefixer')
 		]).process(compiledSass).css;
 
-		// write compiled content into the temporary file
-		fs.writeFileSync(filename, css);
-
-		// this function affect framework.isProcessed() function
-		self.responseFile(req, res, filename);
-	});
-}
+		return css;
+	};
+};

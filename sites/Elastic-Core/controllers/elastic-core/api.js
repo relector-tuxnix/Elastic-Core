@@ -7,11 +7,11 @@ $.apiGetMany = function() {
 
 	var self = this;
 
-	var range = self.post["range[]"];
-	var last = self.post["last[]"];
-	var order = self.post["order[]"];
-	var limit = self.post.limit;
-	var type = self.post.type;
+	var range = self.body["range[]"];
+	var last = self.body["last[]"];
+	var order = self.body["order[]"];
+	var limit = self.body.limit;
+	var type = self.body.type;
 	
 	common.ECGet([`_type = "${type}"`], limit, last, range, order, function(results) {
 
@@ -31,7 +31,7 @@ $.apiGetById = function() {
 
 	var self = this;
 
-	var key = self.post.key;
+	var key = self.body.key;
 
 	common.ECGet([`_key = "${key}"`], 1, [], [], [], function(results) {
 
@@ -51,7 +51,7 @@ $.apiDeleteById = function() {
 
 	var self = this;
 
-	var key = self.post.key;
+	var key = self.body.key;
 
 	common.ECDelete(key, function(results) {
 
@@ -71,8 +71,8 @@ $.apiLogin = function() {
 
 	var self = this;
 
-	var email = self.post.email.toUpperCase();
-	var password = self.post.password;
+	var email = self.body.email.toUpperCase();
+	var password = self.body.password;
 
 	common.ECLogin(self, email, password, function(result) {
 
@@ -85,9 +85,9 @@ $.apiRegister = function() {
 
 	var self = this;
 
-	var email = self.post.email.toUpperCase();
-	var password = self.post.password;
-	var confirm = self.post.confirm;
+	var email = self.body.email.toUpperCase();
+	var password = self.body.password;
+	var confirm = self.body.confirm;
 
 	var constraints = {
 		"email": {
@@ -139,7 +139,7 @@ $.apiSearch = function() {
 
 	var self = this;
 
-	var query = self.post.query;
+	var query = self.body.query;
 
 	common.ECSearch(query, 10, function(results) {
 
@@ -159,5 +159,5 @@ $.apiSetLanguage = function() {
 
 	var self = this;
 
-	common.lang = self.post.lang;
+	common.lang = self.body.lang;
 };

@@ -30,7 +30,7 @@ $.postRegister = function() {
 		} else {
 
 			common.model.message = result.message;
-			common.model.email = self.post.email;
+			common.model.email = self.body.email;
 
 			var page = common.make(self, common.pages.getRegister);
 

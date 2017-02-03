@@ -26,7 +26,7 @@ $.postLogin = function() {
 		if(result.success == false) {
 
 			common.model.message = "Invalid username or password.";
-			common.model.email = self.post.email;
+			common.model.email = self.body.email;
 
 			var page = common.make(self, common.pages.getLogin);			
 

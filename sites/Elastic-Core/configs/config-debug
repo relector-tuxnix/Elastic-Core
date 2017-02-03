@@ -20,7 +20,7 @@ static-url-image             	: /images/
 static-url-video             	: /videos/
 static-url-font                 : /fonts/
 static-url-document             : /uploads/
-static-accepts-custom           : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png
+static-accepts-custom           : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png, .scss
 default-layout                 	: default
 default-request-length     	: 5120 
 default-language		: en-US

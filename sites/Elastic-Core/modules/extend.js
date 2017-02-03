@@ -1,6 +1,8 @@
 
 var definition = (function() {
 
+	var fs = require('fs');
+
 	/*
 		Response html
 		@contentBody {String}

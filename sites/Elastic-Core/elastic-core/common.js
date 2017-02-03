@@ -98,29 +98,26 @@ $.registerPages = function(mappings) {
 			page.controller = undefined;
 		}
 
-		var newRoute = { "url" : page.uri, 
-				 "controller" : page.controller,
-				 "flags" : page.flags, 
-				 "length" : undefined, 
-				 "middleware" : undefined,
-				 "timeout" : undefined,
-				 "options" : undefined,
-				 "priority" : 0,
-				 "active" : true
-			       };
+		if("length" in page == false) {
+			page.length = undefined;
+		}
 
-		if("priority" in page) {
-			newRoute.priority = page.priority;
-		} else {
+		if("priority" in page == false) {
 			page.priority = 0;
 		}
 
-		if("active" in page) {
-			newRoute.active = page.active;
-		} else {
+		if("active" in page == false) {
 			page.active = true;
 		}
-		
+
+		var newRoute = { "url" : page.uri, 
+				 "controller" : page.controller,
+				 "flags" : page.flags, 
+				 "length" : page.length, 
+				 "priority" : page.priority,
+				 "active" : page.active
+			       };
+
 		/* If the route already exists, we need a priority to override it */	
 		if(name in $.routes) {
 
@@ -156,7 +153,7 @@ $.processRoutes = function() {
 
 			console.log(`REGISTERED MAPPING: ${key} -> ${route.url} -> ${cont}`);
 
-			F.route(route.url, controller, route.flags, route.length, route.middleware, route.timeout, route.options);
+			F.route(route.url, controller, route.flags, route.length);
 		}	
 	}
 };
@@ -399,10 +396,6 @@ $.ECSearch = function(keywords, limit, callback) {
 	query.limit(limit);
 
 	db.bucket.query(query, function(err, response, meta) {
-
-		console.log(err);
-		console.log(response);
-		console.log(meta);
 
 		if(err == null) {
 
