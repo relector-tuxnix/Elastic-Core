@@ -322,11 +322,44 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 
 	if(Array.isArray(range) && range.length == 3) {
 
+		var todayDate = new Date();
+		var today = helper.yyyymmdd(todayDate);
+		var weekRange = helper.weekRange(todayDate);		
+		var weekStart = weekRange.start;
+		var weekEnd = weekRange.end;
+		var monthRange = helper.monthRange(todayDate);		
+		var monthStart = monthRange.start;
+		var monthEnd = monthRange.end;
+
 		var column = range[0];
 		var from = range[1];
 		var to = range[2];
 
-		conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+		if(from == "today" || to == "today") {
+
+			from = `${today.yyyy}-${today.mm}-${today.dd} 00:00:00.0000`;
+			to = `${today.yyyy}-${today.mm}-${today.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+		} else if(from == "week" || to == "week") {
+
+			from = `${weekStart.yyyy}-${weekStart.mm}-${weekStart.dd} 00:00:00.0000`;
+			to = `${weekEnd.yyyy}-${weekEnd.mm}-${weekEnd.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+		} else if(from == "month" || to == "month") {
+
+			from = `${monthStart.yyyy}-${monthStart.mm}-${monthStart.dd} 00:00:00.0000`;
+			to = `${monthEnd.yyyy}-${monthEnd.mm}-${monthEnd.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} < "${to}"`);
+
+		} else {
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+		}
 	}
 
 	if(Array.isArray(data) && data.length != 0) {
