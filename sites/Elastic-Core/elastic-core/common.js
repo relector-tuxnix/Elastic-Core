@@ -226,6 +226,7 @@ $.make = function(self, page) {
 };
 
 
+/* This will override existing documents with the same key */
 $.ECStore = function(key, data, callback) {
 
 	var now = new Date().format('yyyy-MM-dd HH:mm:ss.sss');
@@ -241,34 +242,18 @@ $.ECStore = function(key, data, callback) {
 	data._updated = now;
 	data._key = key;
 
-	/* We want to merge objects not over-ride the existing object */
-	$.ECGet([`_key = "${key}"`], 1, [], [], [], function(result) { 
+	db.bucket.upsert(key, data, function(err, response) {
 
-		if(result.error == true) {
+		if(err == null) {
+			
+			callback({success: true, error: false, message: ["Stored."], created: created, key: key});
+			
+		} else {
 
-			callback(result);
+			console.log(err);
 
-			return;
+			callback({success: false, error: true, message: ["An error has occurred."]});
 		}
-
-		if(result.success == true) {
-
-			data = helper.mergeDicts(result.message.pop(), data);
-		}
-
-		db.bucket.upsert(key, data, function(err, response) {
-
-			if(err == null) {
-				
-				callback({success: true, error: false, message: ["Stored."], created: created, key: key});
-				
-			} else {
-
-				console.log(err);
-
-				callback({success: false, error: true, message: ["An error has occurred."]});
-			}
-		});
 	});
 };
 
@@ -455,6 +440,8 @@ $.ECLogin = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
 
+	id = id.toUpperCase();
+
 	auth.login(self, {id: id, password: password}, function(result) {
 
 		if(result == false) {
@@ -480,6 +467,8 @@ $.ECLogout = function(self) {
 $.ECRegister = function(self, id, password, callback) {
 
 	var auth = self.module('authorization');
+
+	id = id.toUpperCase();
 
 	$.ECGet([`_type = "user"`, `_id = "${id}"`], 1, [], [], [], function(result) {
 

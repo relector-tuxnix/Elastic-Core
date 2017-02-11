@@ -21,12 +21,15 @@ $.postLogin = function() {
 
 	var self = this;
 
-	common.ECLogin(self, function(result) {
+	var email = self.body.email;
+	var password = self.body.password;
+
+	common.ECLogin(self, email, password, function(result) {
 
 		if(result.success == false) {
 
 			common.model.message = "Invalid username or password.";
-			common.model.email = self.body.email;
+			common.model.email = email;
 
 			var page = common.make(self, common.pages.getLogin);			
 

@@ -71,7 +71,7 @@ $.apiLogin = function() {
 
 	var self = this;
 
-	var email = self.body.email.toUpperCase();
+	var email = self.body.email;
 	var password = self.body.password;
 
 	common.ECLogin(self, email, password, function(result) {

@@ -13,7 +13,7 @@ var definition = (function() {
 
 		var self = this;
 
-		return this.content(contentBody, "text/html", headers);
+		return self.content(contentBody, "text/html", headers);
 	};
 
 	/*

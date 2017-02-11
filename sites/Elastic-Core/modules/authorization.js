@@ -97,14 +97,14 @@ Users.prototype.login = function(controller, user, callback) {
 		if(user) {
 			var ip = controller.req.ip;
 			var agent = controller.req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '');
-			var uniqueKey = user["_id"] + "," + ip + "," + agent;
+			var uniqueKey = `${user._id},${ip},${agent}`;
 			
 			self.users[uniqueKey] = { user: user, expire: new Date().add('m', self.options.expireSession) };
 
 			controller.req.user = user;
 		
 			self.refresh();
-			self.emit('login', user["_id"], user);
+			self.emit('login', user._id, user);
 			self._writeOK(uniqueKey, controller.req, controller.res);
 
 			callback(true);
