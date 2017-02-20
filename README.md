@@ -2,20 +2,7 @@
 # Elastic-Core
 A simple website core using in total.js and couchbase. This is just a base website consisting of shared components that can be used to build bigger and better websites!
 
-
-## Requirements
-
-* [Node.js](https://nodejs.org/)
-* [NPM.js](https://www.npmjs.com/)
-* [Total.js](https://www.totaljs.com)
-* [Couchbase](https://www.couchbase.com/)
-* [BCrypt-NodeJS](https://www.npmjs.com/package/bcrypt-nodejs)
-* [Handlebars.js](http://handlebarsjs.com/)
-* [Handlebars-form-helpers](https://github.com/badsyntax/handlebars-form-helpers)
-* [Validate.js](http://validatejs.org/)
-* [Node-Sass](https://github.com/sass/node-sass)
-
-## Linux Installation
+## Getting Started
 
 Get the Elastic-Core project
 
@@ -33,21 +20,9 @@ Enter the Elastic-Core nodejs project
 
     $> cd sites/Elastic-Core/
 
-Install the following node modules
+Install the node modules defined in packages.json
 
-    $> npm install total.js --save
-
-    $> npm install couchbase --save
-
-    $> npm install bcrypt-nodejs --save
-
-    $> npm install handlebars --save
-    
-    $> npm install handlebars-form-helpers --save
-
-    $> npm install validate.js --save
-    
-    $> npm install node-sass --save
+    $> npm install
  
 Enter the Elastic-Core project
 
