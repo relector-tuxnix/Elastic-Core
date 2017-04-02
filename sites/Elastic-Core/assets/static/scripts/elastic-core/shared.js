@@ -8,7 +8,14 @@ var errorHandler = function(jqXHR, status, error) {
 	/* Hide all other windows before showing the error */
 	$(".modal").hide();
 
-	arrayIntoUL($("#error-message"), jqXHR.responseJSON.message);
+	if(jqXHR == undefined || jqXHR == null || jqXHR.responseJSON == undefined) {
+
+		arrayIntoUL($("#error-message"), ["Service unavailable."]);
+
+	} else {
+
+		arrayIntoUL($("#error-message"), jqXHR.responseJSON.message);
+	}
 
 	$('#error-message').show();
 	$('#error-window').show();

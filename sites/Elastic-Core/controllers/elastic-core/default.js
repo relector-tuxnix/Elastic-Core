@@ -63,18 +63,24 @@ $.error = function() {
 
 $.handleError = function(self, code) {
 
+	var status = utils.httpStatus(code).replace(code + ": ", "");
+
 	if(self.req.url.contains('api')) {
 
 		self.status = code;
 		
 		/* The front end exception view expects an array of messages */
-		if(Array.isArray(self.exception) == true) {
+		var message;
+
+		if(self.exception == null || self.exception == "") {
+			message = [status];	
+		} else if(Array.isArray(self.exception) == true) {
 			message = self.exception;	
 		} else {
 			message = [self.exception];
 		}
 
-		self.json({ code : code, status : utils.httpStatus(code).replace(code + ": ", ""), message: message });
+		self.json({ code : code, message: message });
 
 	} else {
 
@@ -84,7 +90,7 @@ $.handleError = function(self, code) {
 		common.model.code = code;
 
 		if(self.exception == null || self.exception == "") {
-			common.model.message = utils.httpStatus(code).replace(code + ": ", "");
+			common.model.message = status;
 		} else {
 			common.model.message = self.exception;
 		}

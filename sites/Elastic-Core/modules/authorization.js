@@ -1,12 +1,21 @@
+/*
+ * This authentication module implements IP pinning to a session.
+ * This will prevent session hijacking if traffic is intecepted.
+ * One session per {ID,IP,USER_AGENT} tuple.
+ * You need a constant IP and USER-AGENT to ensure you retain your session!
+ * Users of TOR will notice their session will die over time as their IP will change frequently.
+ */
+
 var bcrypt = require('bcrypt-nodejs');
 var events = require('events');
 
-var SUGAR = 'ABCD1234';
 var USERAGENT = 20;
 
-// expireCookie in days
-// expireSession in minutes
 
+/*
+ * expireCookie in days
+ * expireSession in minutes
+ */
 function Users() {
 	this.options = { cookie: '__user', secret: 'AbcUASOU389ASDadsl', expireSession: 60, expireCookie: 7 };
 	this.framework = null;
@@ -14,68 +23,71 @@ function Users() {
 	this.users = {};
 }
 
+Users.prototype = new events.EventEmitter;
+Users.prototype.onAuthorize = null;
+
 Users.prototype.usage = function() {
+
 	var self = this;
+
 	return 'Online users: ' + self.online + ' ' + self.online.pluralize('users', 'user', 'users');
 };
 
-Users.prototype = new events.EventEmitter;
-
 /*
-	Authorize user
-	@id {Number}
-	@callback {Function} :: callback must have as parameter an object or null value
-*/
-Users.prototype.onAuthorization = null;
+ * Input:
+ *	Mozilla/5.0(X11;Li|ElasticBlog(DEBUG)1.00AtH101s84|Mozilla/5.0(X11;Li
+ *	Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0
+ * Output:
+ *	Mozilla/5.0(X11;Li
+ */
+Users.prototype.cleanAgent = function(agent) {
 
-Users.prototype._onAuthorization = function(req, res, flags, callback) {
+	agent = agent.split('|');
+
+	return agent[0].substring(0, USERAGENT).replace(/\s/g, '');
+}
+
+Users.prototype.authorize = function(req, res, flags, callback) {
 
 	var self = this;
-	var framework = self.framework;
 	var options = self.options;
 	var cookie = req.cookie(options.cookie) || '';
 
-	if (cookie === '' || cookie.length < 10) {
-		callback(false);
-		return;
-	}
-
-	var value = framework.decrypt(cookie, options.secret, false);
-
-	if (value === null) {
-		callback(false);
-		return;
-	}
-
-	var arr = value.split('|');
-
-	if (arr.length != 2 || arr[1] !== SUGAR) {
+	if(!cookie || cookie.length < 10) {
 
 		callback(false);
 		return;
 	}
 
-	var uniqueKey = arr[0].split(',');
+	var keyValue = F.decrypt(cookie, options.secret, false);
 
-	if(uniqueKey.length != 3 || uniqueKey[1] != req.ip || uniqueKey[2]!== req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '')) {
-	
+	if(!keyValue) {
+
 		callback(false);
 		return;
 	}
 
-	var id = arr[0];
+	var uniqueKey = keyValue.split(',');
 
-	var user = self.users[id];
+	/* Check its the same user */
+	if(uniqueKey.length != 3 || uniqueKey[1] !== req.ip || self.cleanAgent(uniqueKey[2]) !== self.cleanAgent(req.headers['user-agent'])) {
+
+		callback(false);
+		return;
+	}
+
+	var user = self.users[keyValue];
 
 	if(user) {
-		user.expire = new Date().add('m', self.options.expireSession);
+
+		user.expire = F.datetime.add('m', self.options.expireSession);
 
 		req.user = user.user;
-		
+
 		callback(true);
-		
+
 		return;
-	}
+	}	
 
 	callback(false);
 };
@@ -92,24 +104,24 @@ Users.prototype.login = function(controller, user, callback) {
 
 	var self = this;
 
-	self.onAuthorization(user, function(user) {
+	users.onAuthorize(user, function(regUser) {
 
-		if(user) {
+		if(regUser) {
+
 			var ip = controller.req.ip;
-			var agent = controller.req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '');
-			var uniqueKey = `${user._id},${ip},${agent}`;
-			
-			self.users[uniqueKey] = { user: user, expire: new Date().add('m', self.options.expireSession) };
+			var agent = self.cleanAgent(controller.req.headers['user-agent']);
+			var uniqueKey = `${regUser._id},${ip},${agent}`;	
 
-			controller.req.user = user;
-		
+			self.users[uniqueKey] = { user: regUser, expire: F.datetime.add('m', self.options.expireSession).getTime() };
 			self.refresh();
-			self.emit('login', user._id, user);
+			self.emit('login', regUser._id, regUser);
+
 			self._writeOK(uniqueKey, controller.req, controller.res);
 
 			callback(true);
 
 		} else {
+
 			callback(false); 	
 		}
 	});
@@ -125,18 +137,20 @@ Users.prototype.logoff = function(controller, id) {
 
 	id = id.toString();
 
-	var ip = controller.req.ip;
-	var agent = controller.req.headers['user-agent'].substring(0, USERAGENT).replace(/\s/g, '');
-	var uniqueKey = id + "," + ip + "," + agent;
-
 	var self = this;
+
+	var ip = controller.req.ip;
+	var agent = self.cleanAgent(controller.req.headers['user-agent']);
+	var uniqueKey = `${id},${ip},${agent}`;	
 
 	var user = self.users[uniqueKey];
 
 	delete self.users[uniqueKey];
+
 	self._writeNO(controller.res);
 
 	self.refresh();
+
 	self.emit('logoff', id, user || null);
 
 	return self;
@@ -146,6 +160,7 @@ Users.prototype.logoff = function(controller, id) {
 	Internal
 */
 Users.prototype.refresh = function() {
+
 	var self = this;
 	var keys = Object.keys(self.users);
 
@@ -164,17 +179,18 @@ Users.prototype.recycle = function() {
 	var keys = Object.keys(self.users);
 	var length = keys.length;
 
-	if (length === 0)
+	if(!length) {
 		return self;
+	}
 
-	var expire = new Date();
+	var expire = F.datetime;
 	var users = self.users;
 
 	for (var i = 0; i < length; i++) {
 		var key = keys[i];
 		var user = users[key];
 
-		if (user.expire < expire) {
+		if(user.expire < expire) {
 			self.emit('expire', key, user.user);
 
 			delete users[key];
@@ -188,12 +204,11 @@ Users.prototype.recycle = function() {
 /*
 	Internal
 */
-Users.prototype._writeOK = function(id, req, res) {
-	var self = this;
-	var framework = self.framework;
-	var value = id + '|' + SUGAR;
+Users.prototype._writeOK = function(uniqueKey, req, res) {
 
-	res.cookie(self.options.cookie, framework.encrypt(value, self.options.secret), new Date().add('d', self.options.expireCookie));
+	var self = this;
+
+	res.cookie(self.options.cookie, F.encrypt(uniqueKey, self.options.secret), F.datetime.add('d', self.options.expireCookie));
 
 	return this;
 };
@@ -202,8 +217,11 @@ Users.prototype._writeOK = function(id, req, res) {
 	Internal
 */
 Users.prototype._writeNO = function(res) {
+
 	var self = this;
-	res.cookie(self.options.cookie, '', new Date().add('y', -1));
+
+	res.cookie(self.options.cookie, '', F.datetime.add('y', -1));
+
 	return self;
 };
 
@@ -228,31 +246,47 @@ Users.prototype.cryptPassword = function(password, callback) {
 
 Users.prototype.comparePassword = bcrypt.compare;
 
+var users = new Users();
 
-module.exports = new Users();
+module.exports = users;
+module.exports.name = module.exports.id = 'auth';
+module.exports.version = '3.0.0';
 
-module.exports.install = function() {
+function service(counter) {
+	// Each 3 minutes
+	counter % 3 === 0 && users.recycle();
+}
 
-	SUGAR = (framework.config.name + framework.config.version + SUGAR).replace(/\s/g, '');
+function authorization(req, res, flags, callback) {
 
-	framework.onAuthorize = function(req, res, flags, callback) {
+	if(users.onAuthorize) {
 
-		if(users.onAuthorization !== null) {
+		users.authorize(req, res, flags, callback);
 
-			users._onAuthorization(req, res, flags, callback);
+		return;
+	}
 
-			return;
-		}
-
-		callback(false);
-	};
-
-	framework.on('service', function(counter) {
-		users.recycle();
-	});
-
-	this.framework = framework;
+	callback(false);
 };
 
+module.exports.install = function(options) {
 
-var users = module.exports;
+	F.onAuthorize = authorization; 
+
+	F.on('service', service);
+
+	if(options) {
+		users.options = U.copy(options);
+	}
+
+	this.emit('auth', users);
+};
+
+module.exports.uninstall = function() {
+
+	if(F.onAuthorize === authorization) {
+		F.onAuthorize = null;
+	}
+
+	F.removeListener('service', service);
+};

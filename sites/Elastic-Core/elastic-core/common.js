@@ -51,9 +51,9 @@ F.once('load', function() {
 
 $.ECSetupAuthentication = function() { 
 
-	var auth = MODULE('authorization');
+	var auth = MODULE('auth');
 
-	auth.onAuthorization = function(user, callback) {
+	auth.onAuthorize = function(user, callback) {
 
 		$.ECGet([`_type = "user"`, `_id = "${user.id}"`], 1, [], [], [], function(result) {
 
@@ -197,7 +197,6 @@ $.make = function(self, page) {
 	$.model.pages = $.pages;
 
 	$.model.page = page;
-
 
 	for(var i = 0, len = $.model.page.views.length; i < len; i++) {
 
@@ -438,9 +437,9 @@ $.ECSearch = function(keywords, limit, callback) {
 
 $.ECLogin = function(self, id, password, callback) {
 
-	var auth = self.module('authorization');
+	var auth = MODULE('auth');
 
-	id = id.toUpperCase();
+	id = id.toString().toUpperCase();
 
 	auth.login(self, {id: id, password: password}, function(result) {
 
@@ -458,7 +457,7 @@ $.ECLogin = function(self, id, password, callback) {
 
 $.ECLogout = function(self) {
 
-	var auth = self.module('authorization');
+	var auth = MODULE('auth');
 
 	auth.logoff(self, self.user["_id"]);
 };
@@ -466,9 +465,9 @@ $.ECLogout = function(self) {
 
 $.ECRegister = function(self, id, password, callback) {
 
-	var auth = self.module('authorization');
+	var auth = MODULE('auth');
 
-	id = id.toUpperCase();
+	id = id.toString().toUpperCase();
 
 	$.ECGet([`_type = "user"`, `_id = "${id}"`], 1, [], [], [], function(result) {
 
