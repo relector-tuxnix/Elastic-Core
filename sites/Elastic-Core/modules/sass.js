@@ -16,6 +16,10 @@ exports.install = function() {
 
 			var filename = F.path.public(req.url);
 
+			// create temporary filename
+			// we'll compile file
+			var cachedFilename = F.path.temp(req.url.replace(/\//g, '-').substring(1));
+
 			fs.readFile(filename, function(err, data) {
 
 				if(err) {
@@ -26,7 +30,10 @@ exports.install = function() {
 
 				var content = F.onCompileStyle(filename, data.toString('utf8'));
 
-				F.responseContent(req, res, 200, content, 'text/css', true);
+				// write compiled content into the temporary file
+				fs.writeFileSync(cachedFilename, content);
+
+				F.responseFile(req, res, cachedFilename);
 			});
 		});
 	});
