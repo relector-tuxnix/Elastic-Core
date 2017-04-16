@@ -31,6 +31,8 @@ var arrayIntoUL = function(ulElement, jsList) {
 
 	var defaultLI = $(ulElement).find('.default-item').clone();
 
+	$(ulElement).css("margin-bottom", "0px");
+
 	$(defaultLI).removeClass();
 	$(defaultLI).show();
 
@@ -46,4 +48,9 @@ var arrayIntoUL = function(ulElement, jsList) {
 	}	
 
 	$(ulElement).show();
+
+	/* We don't want our messages to close to input elements */
+	if($(ulElement).parent().children(":visible").length > 1) {
+		$(ulElement).css("margin-bottom", "10px");
+	}
 };
