@@ -241,6 +241,9 @@ $.ECStore = function(key, data, callback) {
 	data._updated = now;
 	data._key = key;
 
+	console.log("Storing");
+	console.log(data);
+
 	db.bucket.upsert(key, data, function(err, response) {
 
 		if(err == null) {
