@@ -231,24 +231,27 @@ $.ECStore = function(key, data, callback) {
 	var now = new Date().format('yyyy-MM-dd HH:mm:ss.sss');
 	var created = false;
 
-	if(key == null || key == '') {
+	if(key == null || key == undefined || key == '') {
 
-		key = cuid();
+		data._key = cuid();
 		data._created = now; 
 		created = true;
+
+	} else {
+		
+		data._key = key;
 	}
 
 	data._updated = now;
-	data._key = key;
 
-	console.log("Storing");
+	console.log("Storing...");
 	console.log(data);
-
-	db.bucket.upsert(key, data, function(err, response) {
+	
+	db.bucket.upsert(data._key, data, function(err, response) {
 
 		if(err == null) {
 			
-			callback({success: true, error: false, message: ["Stored."], created: created, key: key});
+			callback({success: true, error: false, message: ["Stored."], created: created, key: data._key});
 			
 		} else {
 

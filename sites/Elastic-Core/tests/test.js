@@ -13,7 +13,7 @@ common.ECStore('', data, function(result) {
 	console.log("STORE RESULT:");
 	console.log(result);
 
-	data = {"_key" : result.key, "_password" : "test2"}; 
+	data._password = "test2";
 
 	/* Test merge update */
 	common.ECStore(data["_key"], data, function(result) {
@@ -22,17 +22,18 @@ common.ECStore('', data, function(result) {
 		console.log(result);
 
 		/* Test get */
-		common.ECGet({"_key" : data["_key"]}, 100, [], [], [], [], function(result) {
+		common.ECGet([`_key = "${data._key}"`], 100, [], [], [], function(result) {
 
 			console.log("GET RESULT:");
 			console.log(result);
 
-			/* Test delete */
+			/* Test delete 
 			common.ECDelete(data["_key"], function(result) {
 
 				console.log("DELETE RESULT:");
 				console.log(result);
 			});
+			*/
 		});
 	});
 });
