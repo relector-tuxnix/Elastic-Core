@@ -12,7 +12,7 @@ Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
 
-Enter the Elastic-Core NodeJS project
+Enter the Elastic-Core website
 
     $> cd sites/Elastic-Core/
 
