@@ -6,7 +6,7 @@
  * Users of TOR will notice their session will die over time as their IP will change frequently.
  */
 
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 var events = require('events');
 
 var USERAGENT = 20;
@@ -35,10 +35,10 @@ Users.prototype.usage = function() {
 
 /*
  * Input:
- *	Mozilla/5.0(X11;Li|ElasticBlog(DEBUG)1.00AtH101s84|Mozilla/5.0(X11;Li
- *	Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0
+ * 		Mozilla/5.0(X11;Li|ElasticBlog(DEBUG)1.00AtH101s84|Mozilla/5.0(X11;Li
+ * 		Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0
  * Output:
- *	Mozilla/5.0(X11;Li
+ * 		Mozilla/5.0(X11;Li
  */
 Users.prototype.cleanAgent = function(agent) {
 
@@ -46,6 +46,7 @@ Users.prototype.cleanAgent = function(agent) {
 
 	return agent[0].substring(0, USERAGENT).replace(/\s/g, '');
 }
+
 
 Users.prototype.authorize = function(req, res, flags, callback) {
 
@@ -91,6 +92,7 @@ Users.prototype.authorize = function(req, res, flags, callback) {
 
 	callback(false);
 };
+
 
 /*
 	Login a user
@@ -156,6 +158,7 @@ Users.prototype.logoff = function(controller, id) {
 	return self;
 };
 
+
 /*
 	Internal
 */
@@ -169,6 +172,7 @@ Users.prototype.refresh = function() {
 
 	return self;
 };
+
 
 /*
 	Internal
@@ -201,6 +205,7 @@ Users.prototype.recycle = function() {
 	return self;
 };
 
+
 /*
 	Internal
 */
@@ -212,6 +217,7 @@ Users.prototype._writeOK = function(uniqueKey, req, res) {
 
 	return this;
 };
+
 
 /*
 	Internal
@@ -225,6 +231,7 @@ Users.prototype._writeNO = function(res) {
 	return self;
 };
 
+
 Users.prototype.cryptPassword = function(password, callback) {
 
 	bcrypt.genSalt(10, function(err, salt) {
@@ -237,12 +244,13 @@ Users.prototype.cryptPassword = function(password, callback) {
 
 		} else {
 
-			bcrypt.hash(password, salt, null, function(err, hash) {				
+			bcrypt.hash(password, salt, function(err, hash) {				
 				return callback(err, hash);
 			});
 		}
 	});
 };
+
 
 Users.prototype.comparePassword = bcrypt.compare;
 
@@ -252,10 +260,12 @@ module.exports = users;
 module.exports.name = module.exports.id = 'auth';
 module.exports.version = '3.0.0';
 
+
 function service(counter) {
 	// Each 3 minutes
 	counter % 3 === 0 && users.recycle();
 }
+
 
 function authorization(req, res, flags, callback) {
 
@@ -268,6 +278,7 @@ function authorization(req, res, flags, callback) {
 
 	callback(false);
 };
+
 
 module.exports.install = function(options) {
 
@@ -282,6 +293,7 @@ module.exports.install = function(options) {
 	this.emit('auth', users);
 };
 
+
 module.exports.uninstall = function() {
 
 	if(F.onAuthorize === authorization) {
@@ -290,3 +302,4 @@ module.exports.uninstall = function() {
 
 	F.removeListener('service', service);
 };
+

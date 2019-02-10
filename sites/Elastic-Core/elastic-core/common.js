@@ -5,7 +5,6 @@ var path = require('path');
 var hbs = require('handlebars-form-helpers');
 var val = require("validate.js");
 var cuid = require('cuid');
-var couchbase = require('couchbase')
 
 var helper = require('./helpers.js');
 var db = require('./database.js');
@@ -15,25 +14,20 @@ hbs.register(hb);
 var $ = module.exports;
 
 $.model = {};
-
 $.routes = {};
-
 $.pages = {};
 
 $.defaultLimit = null;
-
 $.defaultTheme = null;
-
 $.locales = null;
-
 $.validate = val.validate;
 
 
 F.once('load', function() {
  
-	$.defaultLimit = F.config['default-item-limit'];
+	$.defaultLimit = CONF['default-item-limit'];
 
-	$.defaultTheme = F.config['default-theme'];
+	$.defaultTheme = CONF['default_theme'];
 
 	console.log("LOADING ELASTIC-CORE!");
 
@@ -43,7 +37,7 @@ F.once('load', function() {
 	$.registerPages(pages);
 
 	/* We don't want to process routes as they are processed by the child site */
-	//$.processRoutes();
+	$.processRoutes();
 
 	$.ECSetupAuthentication();
 });
@@ -55,13 +49,13 @@ $.ECSetupAuthentication = function() {
 
 	auth.onAuthorize = function(user, callback) {
 
-		$.ECGet([`_type = "user"`, `_id = "${user.id}"`], 1, [], [], [], function(result) {
+		$.ECQuery(`SELECT * FROM users WHERE id = ? LIMIT 1`, [user.id], function(result) {
 
 			if(result.success == true) {
 
 				var storedUser = result.message.pop();
 
-				auth.comparePassword(user.password, storedUser["_password"], function(err, isMatch) {
+				auth.comparePassword(user.password, storedUser._password, function(err, isMatch) {
 					
 					if(isMatch == true) {
 
@@ -110,13 +104,14 @@ $.registerPages = function(mappings) {
 			page.active = true;
 		}
 
-		var newRoute = { "url" : page.uri, 
-				 "controller" : page.controller,
-				 "flags" : page.flags, 
-				 "length" : page.length, 
-				 "priority" : page.priority,
-				 "active" : page.active
-			       };
+		var newRoute = { 
+			"url" : page.uri, 
+			"controller" : page.controller,
+			"flags" : page.flags, 
+			"length" : page.length, 
+			"priority" : page.priority,
+			"active" : page.active
+		};
 
 		/* If the route already exists, we need a priority to override it */	
 		if(name in $.routes) {
@@ -128,12 +123,13 @@ $.registerPages = function(mappings) {
 		}
 
 		if(add == true) {
-			$.routes[name] = newRoute;
 
+			$.routes[name] = newRoute;
 			$.pages[name] = page;
 		}
 	}
 };
+
 
 /*
  * Now we have all the routes let total.js know about them.
@@ -158,6 +154,7 @@ $.processRoutes = function() {
 	}
 };
 
+
 /*
  * Lookup the locale keyword and return it.
  */
@@ -165,9 +162,9 @@ $.locale = function(keyword) {
 
 	if($.locales == null) {
 
-		var filename = utils.combine(F.config['directory-locale'], $.defaultTheme);
+		var filename = utils.combine(CONF['directory-locale'], $.defaultTheme);
 
-		filename = path.join(filename, F.config['default-language']);
+		filename = path.join(filename, CONF['default-language']);
 
 		filename = filename + '.json';
 
@@ -185,6 +182,7 @@ $.locale = function(keyword) {
 
 	return $.locales[keyword] || ''; 
 }
+
 
 $.make = function(self, page) {
 
@@ -225,34 +223,16 @@ $.make = function(self, page) {
 };
 
 
-/* This will override existing documents with the same key */
-$.ECStore = function(key, data, callback) {
+$.ECExecute = function(sql, params, callback) {
 
-	var now = new Date().format('yyyy-MM-dd HH:mm:ss.sss');
-	var created = false;
+	console.log(`DOING EXECUTE: '${sql}' WITH PARAMATERS '${params}' `);
 
-	if(key == null || key == undefined || key == '') {
-
-		data._key = cuid();
-		data._created = now; 
-		created = true;
-
-	} else {
-		
-		data._key = key;
-	}
-
-	data._updated = now;
-
-	console.log("Storing...");
-	console.log(data);
-	
-	db.bucket.upsert(data._key, data, function(err, response) {
+	db.conn.run(sql, params, function(err) {
 
 		if(err == null) {
-			
-			callback({success: true, error: false, message: ["Stored."], created: created, key: data._key});
-			
+
+			callback({success: true, error: false, message: ["Execution successful."]}); 
+
 		} else {
 
 			console.log(err);
@@ -263,13 +243,22 @@ $.ECStore = function(key, data, callback) {
 };
 
 
-$.ECDelete = function(key, callback) {
+$.ECQuery = function(sql, params, callback) {
 
-	db.bucket.remove(key, function(err, response) {
+	console.log(`DOING QUERY: '${sql}' WITH PARAMATERS '${params}' `);
+
+	db.conn.all(sql, params, (err, response) => {
 
 		if(err == null) {
 
-			callback({success: true, error: false, message: ["Deleted"]}); 
+			if(response.length == 0) {
+
+				callback({success: false, error: false, message: []});
+
+			} else {
+
+				callback({success: true, error: false, message: response});
+			}
 
 		} else {
 
@@ -279,11 +268,13 @@ $.ECDelete = function(key, callback) {
 		}
 	});
 };
+
 
 /*
  * Need to ensure SQL injection is prevented.
+ * Need to implement columns.
  */
-$.ECGet = function(data, limit, last, range, order, callback) {
+$.ECGet = function(table, columns, where, limit, last, range, order, callback) {
 
 	if(isNaN(limit)) { 
 
@@ -291,8 +282,8 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 
 	} else if(limit < 1 || limit > $.defaultLimit) {
 
-                limit = $.defaultLimit;
-        }
+		limit = $.defaultLimit;
+ 	}
 
 	var conditions = [];
 
@@ -352,11 +343,11 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		}
 	}
 
-	if(Array.isArray(data) && data.length != 0) {
+	if(Array.isArray(where) && where.length != 0) {
 
-		for(var i = 0; i < data.length; i++) {
+		for(var i = 0; i < where.length; i++) {
 
-			conditions.push(data[i]);
+			conditions.push(where[i]);
 		}
 	}
 
@@ -370,74 +361,13 @@ $.ECGet = function(data, limit, last, range, order, callback) {
 		allConditions += ` ORDER BY ${column} ${direction}`
 	}
 
-	$.ECQuery(`SELECT core.* FROM core ${allConditions} LIMIT ${limit}`, callback);
-};
-
-
-$.ECQuery = function(query, callback) {
-
-	console.log(query);
-
-	var sql = db.query.fromString(query);
-	
-	/* Get all documents, even un-indexed ones */
-	sql.consistency(db.query.Consistency.REQUEST_PLUS);
-
-	db.bucket.query(sql, function(err, response, meta) {
-
-		if(err == null) {
-
-			if(response.length == 0) {
-
-				callback({success: false, error: false, message: []});
-
-			} else {
-
-				callback({success: true, error: false, message: response});
-			}
-
-		} else {
-
-			console.log(err);
-
-			callback({success: false, error: true, message: ["An error has occurred."]});
-		}
-	});
+	$.ECQuery(`SELECT * FROM ${table} ${allConditions} LIMIT ${limit}`, callback);
 };
 
 
 $.ECSearch = function(keywords, limit, callback) {
 
-	var searchQuery = db.couchbase.SearchQuery;
-
-	var match = searchQuery.match(keywords);
-
-	match.fuzziness(2);
-
-	var query = searchQuery.new('post-search-index', match);
-
-	query.limit(limit);
-
-	db.bucket.query(query, function(err, response, meta) {
-
-		if(err == null) {
-
-			if(response.length == 0) {
-
-				callback({success: false, error: false, message: []});
-
-			} else {
-
-				callback({success: true, error: false, message: response});
-			}
-
-		} else {
-
-			console.log(err);
-
-			callback({success: false, error: true, message: ["An error has occurred."]});
-		}
-	});
+	callback({success: false, error: true, message: ["An error has occurred."]});
 };
 
 
@@ -465,7 +395,7 @@ $.ECLogout = function(self) {
 
 	var auth = MODULE('auth');
 
-	auth.logoff(self, self.user["_id"]);
+	auth.logoff(self, self.user._id);
 };
 
 
@@ -475,7 +405,8 @@ $.ECRegister = function(self, id, password, callback) {
 
 	id = id.toString().toUpperCase();
 
-	$.ECGet([`_type = "user"`, `_id = "${id}"`], 1, [], [], [], function(result) {
+	/*
+	$.ECGet("User", [`id = "${id}"`], 1, [], [], [], function(result) {
 
 		if(result.success == true) {
 
@@ -512,4 +443,5 @@ $.ECRegister = function(self, id, password, callback) {
 			});
 		}
 	});
+	*/
 };

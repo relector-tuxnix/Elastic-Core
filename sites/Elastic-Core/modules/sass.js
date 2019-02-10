@@ -1,5 +1,4 @@
 var sass = require('node-sass');
-var postcss = require('postcss');
 var fs = require('fs');
 
 exports.install = function() {
@@ -41,14 +40,6 @@ exports.install = function() {
 	F.onCompileStyle = function(filename, content) {
 
 		var compiledSass = sass.renderSync({ file: filename, data: content, outputStyle: 'compressed' }).css.toString('utf8');
-
-		var css = postcss([
-			require('postcss-input-range'),
-			require('postcss-lh'),
-			require('postcss-custom-media'),
-			require('postcss-media-minmax'),
-			require('autoprefixer')
-		]).process(compiledSass).css;
 
 		return css;
 	};

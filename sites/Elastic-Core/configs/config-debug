@@ -1,29 +1,30 @@
 name                       	: Elastic Core (DEBUG)
 version                    	: 1.00
 secret                    	: elastic-core-1.00
-default-ip       		: 127.0.0.1
-default-port     		: 8000
+default-ip       			: 127.0.0.1
+default-port     			: 8000
 etag-version               	:
-directory-contents		: /assets/
+directory-contents			: /assets/
 directory-controllers		: /controllers/
 directory-views            	: /assets/views/
-directory-locale		: /assets/locale/
-directory-temp                  : /tmp/
-directory-resources             : /assets/resources/
-directory-public             	: /assets/static/
-directory-modules             	: /modules/
-directory-logs                  : /logs/
-static-url                      :
-static-url-script               : /scripts/
-static-url-style                : /styles/
-static-url-image             	: /images/
-static-url-video             	: /videos/
-static-url-font                 : /fonts/
-static-url-document             : /uploads/
-static-accepts-custom           : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png, .scss
-default-layout                 	: default
-default-request-length     	: 5120 
-default-language		: en-US
-default-item-limit		: 50
-default-theme			: elastic-core
-max-file-size			: 104857600
+directory-locale			: /assets/locale/
+directory-temp				: /tmp/
+directory-resources         : /assets/resources/
+directory-public            : /assets/static/
+directory-modules           : /modules/
+directory-logs              : /logs/
+static_url                  :
+static_url_script           : /scripts/
+static_url_style            : /styles/
+static_url_image            : /images/
+static_url_video            : /videos/
+static_url_font             : /fonts/
+static_url_document         : /uploads/
+static_accepts_custom       : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png, .scss
+default_layout              : default
+default_request_length     	: 5120 
+default-language			: en-US
+default-item-limit			: 50
+default_theme				: elastic-core
+max-file-size				: 104857600
+default_database			: Chinook.sqlite

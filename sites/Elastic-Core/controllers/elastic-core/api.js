@@ -11,9 +11,9 @@ $.apiGetMany = function() {
 	var last = self.body["last[]"];
 	var order = self.body["order[]"];
 	var limit = self.body.limit;
-	var type = self.body.type;
+	var table = self.body.type;
 	
-	common.ECGet([`_type = "${type}"`], limit, last, range, order, function(results) {
+	common.ECGet(table, ["*"], [], limit, last, range, order, function(results) {
 
 		if(results.error == true) {
 			
@@ -33,6 +33,7 @@ $.apiGetById = function() {
 
 	var key = self.body.key;
 
+	/*
 	common.ECGet([`_key = "${key}"`], 1, [], [], [], function(results) {
 
 		if(results.error == true) {
@@ -44,6 +45,7 @@ $.apiGetById = function() {
 			self.json(results.message);
 		}
 	});
+	*/
 };
 
 
@@ -53,6 +55,7 @@ $.apiDeleteById = function() {
 
 	var key = self.body.key;
 
+	/*
 	common.ECDelete(key, function(results) {
 
 		if(results.error == true) {
@@ -64,6 +67,7 @@ $.apiDeleteById = function() {
 			self.json(results);
 		}
 	});
+	*/
 };
 
 
@@ -161,3 +165,5 @@ $.apiSetLanguage = function() {
 
 	common.lang = self.body.lang;
 };
+
+

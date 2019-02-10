@@ -2,7 +2,10 @@ var $ = exports;
 
 var common = require('../../elastic-core/common.js')
 
-// GET Register Page
+
+/*
+ * GET Register Page
+ */
 $.getRegister = function() {
 
 	var self = this;
@@ -16,12 +19,15 @@ $.getRegister = function() {
 	self.html(page);
 }
 
-//POST Register Page
+
+/* 
+ * POST Register Page
+ */
 $.postRegister = function() {
 
 	var self = this;
 
-	common.EBRegister(self, function(result) {
+	common.ECRegister(self, function(result) {
 
 		if(result.success == true) {
 

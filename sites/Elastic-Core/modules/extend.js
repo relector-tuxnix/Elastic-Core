@@ -25,7 +25,7 @@ var definition = (function() {
 
 		var self = this;
 
-		var filename = utils.combine(self.config['directory-views'], name);
+		var filename = utils.combine(CONF['directory-views'], name);
 
 		var tmp = '';
 

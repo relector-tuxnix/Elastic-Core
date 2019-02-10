@@ -2,7 +2,10 @@ var $ = exports;
 
 var common = require('../../elastic-core/common.js')
 
-// GET Login Page
+
+/*
+ * GET Login Page
+ */
 $.getLogin = function() {
 
 	var self = this;
@@ -16,7 +19,10 @@ $.getLogin = function() {
 	self.html(page);
 };
 
-// POST Login Page
+
+/*
+ * POST Login Page
+ */
 $.postLogin = function() {
 
 	var self = this;
@@ -42,7 +48,10 @@ $.postLogin = function() {
 	});
 };
 
-//GET Logout Page
+
+/*
+ * GET Logout Page
+ */
 $.logout = function() {
 
 	var self = this;
@@ -54,3 +63,4 @@ $.logout = function() {
 
 	self.redirect(common.pages.home.uri);
 };
+
