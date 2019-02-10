@@ -12,11 +12,11 @@ Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
 
-Get Couchbase from the offical site and install
+Get SQLite from the offical site and install
 
-    https://www.couchbase.com/
+    https://sqlite.org/
 
-Enter the Elastic-Core nodejs project
+Enter the Elastic-Core NodeJS project
 
     $> cd sites/Elastic-Core/
 
