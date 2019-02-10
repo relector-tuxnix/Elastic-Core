@@ -1,6 +1,6 @@
 
 # Elastic-Core
-A simple website core using in total.js and couchbase. This is just a base website consisting of shared components that can be used to build bigger and better websites!
+A simple website core using in total.js and sqlite. This is just a base website consisting of shared components that can be inherited to build bigger and better websites!
 
 ## Getting Started
 
