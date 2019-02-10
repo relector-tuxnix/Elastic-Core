@@ -1,6 +1,6 @@
 
 # Elastic-Core
-A simple website core using in total.js and couchbase. This is just a base website consisting of shared components that can be used to build bigger and better websites!
+A simple website core using in total.js and sqlite. This is just a base website consisting of shared components that can be inherited to build bigger and better websites!
 
 ## Getting Started
 
@@ -12,11 +12,11 @@ Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
 
-Get Couchbase from the offical site and install
+Get SQLite from the offical site and install
 
-    https://www.couchbase.com/
+    https://sqlite.org/
 
-Enter the Elastic-Core nodejs project
+Enter the Elastic-Core NodeJS project
 
     $> cd sites/Elastic-Core/
 
