@@ -12,11 +12,7 @@ Enter the Elastic-Core project
 
     $> cd ./Elastic-Core
 
-Get SQLite from the offical site and install
-
-    https://sqlite.org/
-
-Enter the Elastic-Core NodeJS project
+Enter the Elastic-Core website
 
     $> cd sites/Elastic-Core/
 
