@@ -7,13 +7,14 @@ $.apiGetMany = function() {
 
 	var self = this;
 
+	var table = self.body.table;
+	var columns = self.body["columns[]"];
+	var where = self.body["where[]"];
 	var range = self.body["range[]"];
-	var last = self.body["last[]"];
 	var order = self.body["order[]"];
 	var limit = self.body.limit;
-	var table = self.body.type;
-	
-	common.ECGet(table, ["*"], [], limit, last, range, order, function(results) {
+
+	common.ECGet(table, columns, where, range, order, limit, function(results) {
 
 		if(results.error == true) {
 			
@@ -24,28 +25,6 @@ $.apiGetMany = function() {
 			self.json(results);
 		}
 	});
-};
-
-
-$.apiGetById = function() {
-
-	var self = this;
-
-	var key = self.body.key;
-
-	/*
-	common.ECGet([`_key = "${key}"`], 1, [], [], [], function(results) {
-
-		if(results.error == true) {
-			
-			self.view500(results.message);
-			
-		} else {
-
-			self.json(results.message);
-		}
-	});
-	*/
 };
 
 
@@ -53,10 +32,11 @@ $.apiDeleteById = function() {
 
 	var self = this;
 
+	var table = self.body.table;
 	var key = self.body.key;
-
-	/*
-	common.ECDelete(key, function(results) {
+	var value = self.body.value;
+	
+	common.ECDelete(table, key, value, function(results) {
 
 		if(results.error == true) {
 	
@@ -67,7 +47,6 @@ $.apiDeleteById = function() {
 			self.json(results);
 		}
 	});
-	*/
 };
 
 
@@ -80,7 +59,14 @@ $.apiLogin = function() {
 
 	common.ECLogin(self, email, password, function(result) {
 
-		self.json(result);
+		if(results.error == true) {
+	
+			self.view500(results.message);
+
+		} else {
+
+			self.json(results);
+		}
 	});
 };
 
@@ -93,39 +79,17 @@ $.apiRegister = function() {
 	var password = self.body.password;
 	var confirm = self.body.confirm;
 
-	var constraints = {
-		"email": {
-			presence: true,
-	  		email: true,
-		},
-		"password": {
-			presence: true,
-	  		length: {
-				minimum: 5
-	  		}
-	  	},
-	  	"confirm": {
-			presence: true,
-			equality: {
-				attribute: "password",
-				message: "^The passwords do not match!"
-			}
+	common.ECRegister(self, email, password, confirm, function(results) {
+
+		if(results.error == true) {
+	
+			self.view500(results.message);
+
+		} else {
+
+			self.json(results);
 		}
-	};
-
-	var failed = common.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
-
-	if(failed == undefined) {
-
-		common.ECRegister(self, email, password, function(result) {
-
-			self.json(result);
-		});
-
-	} else {
-
-		self.json({success: false, message: failed});
-	}
+	});
 };
 
 

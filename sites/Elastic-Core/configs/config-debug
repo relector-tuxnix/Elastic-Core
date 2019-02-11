@@ -1,18 +1,18 @@
 name                       	: Elastic Core (DEBUG)
 version                    	: 1.00
 secret                    	: elastic-core-1.00
-default-ip       			: 127.0.0.1
-default-port     			: 8000
-etag-version               	:
-directory-contents			: /assets/
-directory-controllers		: /controllers/
+default_ip       			: 127.0.0.1
+default_port     			: 8000
+etag_version               	:
+directory_contents			: /assets/
+directory_controllers		: /controllers/
 directory-views            	: /assets/views/
-directory-locale			: /assets/locale/
-directory-temp				: /tmp/
-directory-resources         : /assets/resources/
-directory-public            : /assets/static/
-directory-modules           : /modules/
-directory-logs              : /logs/
+directory_locale			: /assets/locale/
+directory_temp				: /tmp/
+directory_resources         : /assets/resources/
+directory_public            : /assets/static/
+directory_modules           : /modules/
+directory_logs              : /logs/
 static_url                  :
 static_url_script           : /scripts/
 static_url_style            : /styles/
@@ -20,11 +20,11 @@ static_url_image            : /images/
 static_url_video            : /videos/
 static_url_font             : /fonts/
 static_url_document         : /uploads/
-static_accepts_custom       : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png, .scss
+static_accepts_custom       : .tar, .gz, .exe, .jpeg, .jpg, .gif, .png, .scss, .txt
 default_layout              : default
 default_request_length     	: 5120 
 default-language			: en-US
 default-item-limit			: 50
 default_theme				: elastic-core
 max-file-size				: 104857600
-default_database			: Chinook.sqlite
+default_database			: ElasticCore.sqlite

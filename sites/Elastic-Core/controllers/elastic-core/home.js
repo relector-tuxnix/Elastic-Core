@@ -13,9 +13,7 @@ $.home = function() {
 	common.model = {};
 	common.model.hi = common.locale('howdy');
 
-	common.ECQuery("SELECT * FROM Artist LIMIT 50", [], function(result) {
-
-		console.log(result.message);
+	common.ECQuery("SELECT * FROM User LIMIT 50", [], function(result) {
 
 		common.model.artists = JSON.stringify(result.message);
 

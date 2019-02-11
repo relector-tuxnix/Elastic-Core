@@ -109,7 +109,8 @@ $.home = {
 	controller: 'elastic-core/home.js',
 	label: 'Elastic Core Example Home Page',
 	views: [
-		{'default' : 'elastic-core/home.html'}
+		{'body' : 'elastic-core/home.html'},
+		{'default' : 'elastic-core/default.html'}
 	],
 	flags: ['get'],
 	above: [],
@@ -122,7 +123,8 @@ $.getLogin = {
 	flags: ['unauthorize', 'get'],
 	label: 'Elastic Core Example Login Page',
 	views: [
-		{'default' : 'elastic-core/login.html'}
+		{'body' : 'elastic-core/login.html'},
+		{'default' : 'elastic-core/default.html'}
 	],
 	above: [],
 	below: []
@@ -134,7 +136,8 @@ $.postLogin = {
 	flags: ['unauthorize', 'post'],
 	label: 'Elastic Core Example Login Page',
 	views: [
-		{'default' : 'elastic-core/login.html'}
+		{'body' : 'elastic-core/login.html'},
+		{'default' : 'elastic-core/default.html'}
 	],
 	above: [],
 	below: []
@@ -156,18 +159,10 @@ $.getRegister = {
 	postFlags: ['unauthorize', 'post'],
 	label: 'Register',
 	views: [
-		{'default' : 'elastic-core/register.html'}
+		{'body' : 'elastic-core/register.html'},
+		{'default' : 'elastic-core/default.html'}
 	],
 	above: [],
 	below: []
 };
 
-$.postRegister = {
-	uri: '/register',
-	controller: 'elastic-core/register.js',
-	flags: ['unauthorize', 'post'],
-	label: 'Register',
-	views: [],
-	above: [],
-	below: []
-};

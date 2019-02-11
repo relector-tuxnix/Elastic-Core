@@ -1,6 +1,7 @@
 
 var $ = module.exports = require('handlebars');
 
+
 $.registerHelper('compare', function(lvalue, operator, rvalue, options) {
 
 	var operators, result;
@@ -40,6 +41,7 @@ $.registerHelper('compare', function(lvalue, operator, rvalue, options) {
 	}
 });
 
+
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1
@@ -71,6 +73,7 @@ $.yyyymmdd = function(date) {
 	return  {"mm" : mm, "dd" : dd, "yyyy" : yyyy}; 
 };
 
+
 $.weekRange = function(date) {
 
 	var day = date.getDay();
@@ -93,6 +96,7 @@ $.weekRange = function(date) {
 	return {"start" : weekStartDate, "end" : weekEndDate};
 };
 
+
 $.monthRange = function(date) {
 
 	var firstDay = new Date(date.getFullYear(), date.getMonth(), 1); 
@@ -104,4 +108,10 @@ $.monthRange = function(date) {
 	var monthEndDate = $.yyyymmdd(lastDay);
 
 	return {"start" : monthStartDate, "end" : monthEndDate};
+};
+
+
+$.dateNow = function() {
+	
+	return new Date().format('yyyy-MM-dd HH:mm:ss.sss');
 };

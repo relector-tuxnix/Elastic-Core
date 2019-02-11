@@ -112,11 +112,11 @@ Users.prototype.login = function(controller, user, callback) {
 
 			var ip = controller.req.ip;
 			var agent = self.cleanAgent(controller.req.headers['user-agent']);
-			var uniqueKey = `${regUser._id},${ip},${agent}`;	
+			var uniqueKey = `${regUser.email},${ip},${agent}`;	
 
 			self.users[uniqueKey] = { user: regUser, expire: F.datetime.add('m', self.options.expireSession).getTime() };
 			self.refresh();
-			self.emit('login', regUser._id, regUser);
+			self.emit('login', regUser.email, regUser);
 
 			self._writeOK(uniqueKey, controller.req, controller.res);
 
@@ -135,15 +135,15 @@ Users.prototype.login = function(controller, user, callback) {
 	@id {Number}
 	return {Users}
 */
-Users.prototype.logoff = function(controller, id) {
+Users.prototype.logoff = function(controller, email) {
 
-	id = id.toString();
+	email = email.toString();
 
 	var self = this;
 
 	var ip = controller.req.ip;
 	var agent = self.cleanAgent(controller.req.headers['user-agent']);
-	var uniqueKey = `${id},${ip},${agent}`;	
+	var uniqueKey = `${email},${ip},${agent}`;	
 
 	var user = self.users[uniqueKey];
 
@@ -153,7 +153,7 @@ Users.prototype.logoff = function(controller, id) {
 
 	self.refresh();
 
-	self.emit('logoff', id, user || null);
+	self.emit('logoff', email, user || null);
 
 	return self;
 };

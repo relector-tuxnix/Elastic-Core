@@ -49,13 +49,13 @@ $.ECSetupAuthentication = function() {
 
 	auth.onAuthorize = function(user, callback) {
 
-		$.ECQuery(`SELECT * FROM users WHERE id = ? LIMIT 1`, [user.id], function(result) {
+		$.ECQuery(`SELECT * FROM User WHERE email = ? LIMIT 1`, [user.id], function(result) {
 
 			if(result.success == true) {
 
 				var storedUser = result.message.pop();
 
-				auth.comparePassword(user.password, storedUser._password, function(err, isMatch) {
+				auth.comparePassword(user.password, storedUser.passwordHash, function(err, isMatch) {
 					
 					if(isMatch == true) {
 
@@ -208,7 +208,7 @@ $.make = function(self, page) {
 
 		var template = hb.compile(source);
 
-		//Last view is our final view
+		/* Last view is our final view */
 		if(i == $.model.page.views.length - 1) {
 
 			out = template($.model);
@@ -274,94 +274,125 @@ $.ECQuery = function(sql, params, callback) {
  * Need to ensure SQL injection is prevented.
  * Need to implement columns.
  */
-$.ECGet = function(table, columns, where, limit, last, range, order, callback) {
+$.ECGet = function(table, columns, where, range, order, limit, callback) {
 
-	if(isNaN(limit)) { 
+	var constraints = {
 
-		limit = 0;
+		"table": {
+			inclusion: [],
+			message: "^Not supported: %{value}"
+		},
+		"limit" : {
+			length: {
+				minimum: 0,
+				maximum: $.defaultLimit, 
+				tooShort: "Needs to have minimum %{count} limit or more.",
+				tooLong: "Needs to have maximum %{count} limit or less."
+			}
+		}
+	};
 
-	} else if(limit < 1 || limit > $.defaultLimit) {
+	var failed = $.validate({"table": table, "limit": limit}, constraints, {format: "flat"});
 
-		limit = $.defaultLimit;
- 	}
+	if(failed == undefined) {
 
-	var conditions = [];
+		var allColumns = columns.join(', ');
 
-	if(Array.isArray(last) && last.length == 3) {
+		var conditions = [];
 
-		var column = last[0];
-		var direction = last[1];
-		var value = last[2];
+		if(Array.isArray(range) && range.length == 3) {
 
-		if(direction != ">" && direction != "<") { 
+			var todayDate = new Date();
+			var today = helper.yyyymmdd(todayDate);
+			var weekRange = helper.weekRange(todayDate);		
+			var weekStart = weekRange.start;
+			var weekEnd = weekRange.end;
+			var monthRange = helper.monthRange(todayDate);		
+			var monthStart = monthRange.start;
+			var monthEnd = monthRange.end;
 
-			direction = ">";
+			var column = range[0];
+			var from = range[1];
+			var to = range[2];
+
+			if(from == "today" || to == "today") {
+
+				from = `${today.yyyy}-${today.mm}-${today.dd} 00:00:00.0000`;
+				to = `${today.yyyy}-${today.mm}-${today.dd} 23:59:59.9999`;
+
+				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+			} else if(from == "week" || to == "week") {
+
+				from = `${weekStart.yyyy}-${weekStart.mm}-${weekStart.dd} 00:00:00.0000`;
+				to = `${weekEnd.yyyy}-${weekEnd.mm}-${weekEnd.dd} 23:59:59.9999`;
+
+				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+			} else if(from == "month" || to == "month") {
+
+				from = `${monthStart.yyyy}-${monthStart.mm}-${monthStart.dd} 00:00:00.0000`;
+				to = `${monthEnd.yyyy}-${monthEnd.mm}-${monthEnd.dd} 23:59:59.9999`;
+
+				conditions.push(`${column} >= "${from}" AND ${column} < "${to}"`);
+
+			} else {
+
+				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+			}
 		}
 
-		conditions.push(`${column} ${direction} "${value}"`);
-	}
+		if(Array.isArray(where) && where.length != 0) {
 
-	if(Array.isArray(range) && range.length == 3) {
+			for(var i = 0; i < where.length; i++) {
 
-		var todayDate = new Date();
-		var today = helper.yyyymmdd(todayDate);
-		var weekRange = helper.weekRange(todayDate);		
-		var weekStart = weekRange.start;
-		var weekEnd = weekRange.end;
-		var monthRange = helper.monthRange(todayDate);		
-		var monthStart = monthRange.start;
-		var monthEnd = monthRange.end;
-
-		var column = range[0];
-		var from = range[1];
-		var to = range[2];
-
-		if(from == "today" || to == "today") {
-
-			from = `${today.yyyy}-${today.mm}-${today.dd} 00:00:00.0000`;
-			to = `${today.yyyy}-${today.mm}-${today.dd} 23:59:59.9999`;
-
-			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
-
-		} else if(from == "week" || to == "week") {
-
-			from = `${weekStart.yyyy}-${weekStart.mm}-${weekStart.dd} 00:00:00.0000`;
-			to = `${weekEnd.yyyy}-${weekEnd.mm}-${weekEnd.dd} 23:59:59.9999`;
-
-			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
-
-		} else if(from == "month" || to == "month") {
-
-			from = `${monthStart.yyyy}-${monthStart.mm}-${monthStart.dd} 00:00:00.0000`;
-			to = `${monthEnd.yyyy}-${monthEnd.mm}-${monthEnd.dd} 23:59:59.9999`;
-
-			conditions.push(`${column} >= "${from}" AND ${column} < "${to}"`);
-
-		} else {
-
-			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+				conditions.push(where[i]);
+			}
 		}
-	}
 
-	if(Array.isArray(where) && where.length != 0) {
+		var allConditions = `WHERE ${conditions.join(' AND ')}`;
 
-		for(var i = 0; i < where.length; i++) {
+		if(Array.isArray(order) && order.length == 2) {
 
-			conditions.push(where[i]);
+			var column = order[0];	
+			var direction = order[1];
+
+			allConditions += ` ORDER BY ${column} ${direction}`
 		}
+
+		$.ECQuery(`SELECT ${allColumns} FROM ${table} ${allConditions} LIMIT ${limit}`, callback);
+
+	} else {
+
+		callback({success: false, error: true, message: failed});
 	}
+};
 
-	var allConditions = `WHERE ${conditions.join(' AND ')}`;
 
-	if(Array.isArray(order) && order.length == 2) {
+$.ECDelete = function(table, key, value, callback) {
 
-		var column = order[0];	
-		var direction = order[1];
+	var sql = `DELETE FROM ${table} WHERE ${key} = ?`;
 
-		allConditions += ` ORDER BY ${column} ${direction}`
+	var constraints = {
+		"table": {
+			inclusion: [],
+			message: "^Not supported: %{value}"
+		}
+	};
+
+	var failed = $.validate({"table": table}, constraints, {format: "flat"});
+
+	if(failed == undefined) {
+
+		$.ECExecute(sql, [value], function(results) {
+
+			callback(results);
+		});
+
+	} else {
+
+		callback({success: false, error: true, message: failed});
 	}
-
-	$.ECQuery(`SELECT * FROM ${table} ${allConditions} LIMIT ${limit}`, callback);
 };
 
 
@@ -395,53 +426,85 @@ $.ECLogout = function(self) {
 
 	var auth = MODULE('auth');
 
-	auth.logoff(self, self.user._id);
+	auth.logoff(self, self.user.email);
 };
 
 
-$.ECRegister = function(self, id, password, callback) {
+$.ECRegister = function(self, email, password, confirm, callback) {
 
 	var auth = MODULE('auth');
 
-	id = id.toString().toUpperCase();
+	var email = self.body.email.toUpperCase();
+	var password = self.body.password;
+	var confirm = self.body.confirm;
 
-	/*
-	$.ECGet("User", [`id = "${id}"`], 1, [], [], [], function(result) {
-
-		if(result.success == true) {
-
-			callback({success: false, error: false, message: ["Username already exists."]});
-
-		} else {
-
-			auth.cryptPassword(password, function(err, hash) {
-
-				if(err != null) {
-
-					console.log(err);
-
-					callback({success: false, error: true, message: ["An error has occurred."]});
-		
-				} else {
-
-					var data = {"_type" : "user", "_id" : id, "_password" : hash};
-
-					$.ECStore('', data, function(result) {
-
-						if(result.success == true) {
-							
-							callback({success: true, error: false, message: ["User registration successful."]});
-							
-						} else {
-
-							console.log(err);
-
-							callback({success: false, error: true, message: ["An error has occurred."]});
-						}
-					});
-				}
-			});
+	var constraints = {
+		"email": {
+			presence: true,
+	  		email: true,
+		},
+		"password": {
+			presence: true,
+	  		length: {
+				minimum: 5
+	  		}
+	  	},
+	  	"confirm": {
+			presence: true,
+			equality: {
+				attribute: "password",
+				message: "^The passwords do not match!"
+			}
 		}
-	});
-	*/
+	};
+
+	var failed = $.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
+
+	if(failed == undefined) {
+
+		email = email.toString().toUpperCase();
+
+		$.ECQuery("SELECT * FROM User WHERE email = ? LIMIT 1", [email], function(result) {
+
+			if(result.success == true) {
+
+				callback({success: false, error: false, message: ["Username already exists."]});
+
+			} else {
+
+				auth.cryptPassword(password, function(err, hash) {
+
+					if(err != null) {
+
+						console.log(err);
+
+						callback({success: false, error: true, message: ["An error has occurred."]});
+			
+					} else {
+
+						var sql = 'INSERT INTO User (id, email, emailConfirmed, passwordHash, lockoutEnd, lockoutEnabled, accessFailedCount, creationDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'; 
+						
+						$.ECExecute(sql, [cuid(), email, 1, hash, '', 0, 0, helper.dateNow()], function(result) {
+
+							if(result.success == true) {
+								
+								callback({success: true, error: false, message: ["User registration successful."]});
+								
+							} else {
+
+								console.log(err);
+
+								callback({success: false, error: true, message: ["An error has occurred."]});
+							}
+						});
+					}
+				});
+			}
+		});
+
+	} else {
+
+		self.json({success: false, error: true, message: failed});
+	}
 };
+

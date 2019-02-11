@@ -1,11 +1,50 @@
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		$('#register').click(function() {
+
+			var email = $('#email').val();
+			var password = $('#password').val();
+			var confirm = $('#confirmPassword').val();
+
+			$.ajax({ 
+
+				type: "POST", 
+				url: "{{pages.apiRegister.uri}}", 
+				data: {
+					"email" : email,
+					"password" : password,
+					"confirm" : confirm
+				} 
+
+			}).done(function(data) { 
+
+				arrayIntoUL($("#error-message"), data.message);
+
+			}).fail(errorHandler);
+		});
+
+	});
+
+</script>
+
+<style type="text/css">
+
+	.default-item {
+		display: none;
+	}
+
+</style>
+
 <h2>{{pages.getRegister.label}}</h2>
 
-<form method="post" action="{{pages.postRegister.uri}}">
-	<input placeholder="Email" type="text" id="email" name="email" class="inputs" value="{{model.email}}">
-	<input placeholder="Password" type="password" id="password" name="password" class="inputs">
-	<input placeholder="Confirm Password" type="password" id="confirmPassword" name="confirmPassword" class="inputs">
-	<input class="inputs" type="submit" name="save" value="Register">
-</form>
+<ul id="error-message">
+	<li class="default-item">&nbsp;</li>
+</ul>
 
-<div id="login-message"><p>{{message}}</p></div>
+<input placeholder="Email" type="text" id="email" name="email" value=""/>
+<input placeholder="Password" type="password" id="password" name="password" value=""/>
+<input placeholder="Confirm Password" type="password" id="confirmPassword" name="confirmPassword" value=""/>
+<input type="button" id="register" name="register" value="Register"/>
 

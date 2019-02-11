@@ -5,9 +5,6 @@
  */
 var errorHandler = function(jqXHR, status, error) {
 
-	/* Hide all other windows before showing the error */
-	$(".modal").hide();
-
 	if(jqXHR == undefined || jqXHR == null || jqXHR.responseJSON == undefined) {
 
 		arrayIntoUL($("#error-message"), ["Service unavailable."]);
