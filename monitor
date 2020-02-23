@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ -n "$1" ]; then
+
+	if [ ! -d "./sites/$1" ]; then
+
+		echo "Could not find site to update!"	
+		echo "Make sure it exists in the sites directory!"
+	
+	else
+
+		#Redeploy any changes to sites/$1
+		while [ "true" ]
+		do
+			# Look for files that have changed in the last 60 * 0.005 = 300ms
+			change=`find . -not -path "./live/*" -type f \( ! -iname ".*" \) -mmin 0.005 -ls`
+
+			if [[ ! -z $change ]]
+			then
+
+				echo "Updating..."
+
+				rm -r ./live/assets
+				cp -r ./sites/Elastic-Core/assets ./live
+				cp -r ./sites/$1/assets ./live
+
+				echo $change
+			fi
+
+			# Sleep for 100ms
+			sleep 0.1
+
+		done
+	fi
+else
+
+	echo "./update <site>"
+
+fi

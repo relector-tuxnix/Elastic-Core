@@ -3,31 +3,6 @@ var $ = exports;
 var common = require('../../elastic-core/common.js');
 
 
-$.apiGetMany = function() {
-
-	var self = this;
-
-	var table = self.body.table;
-	var columns = self.body["columns[]"];
-	var where = self.body["where[]"];
-	var range = self.body["range[]"];
-	var order = self.body["order[]"];
-	var limit = self.body.limit;
-
-	common.ECGet(table, columns, where, range, order, limit, function(results) {
-
-		if(results.error == true) {
-			
-			self.view500(results.message);
-			
-		} else {
-
-			self.json(results);
-		}
-	});
-};
-
-
 $.apiDeleteById = function() {
 
 	var self = this;
@@ -59,13 +34,13 @@ $.apiLogin = function() {
 
 	common.ECLogin(self, email, password, function(result) {
 
-		if(results.error == true) {
+		if(result.error == true) {
 	
-			self.view500(results.message);
+			self.view500(result.message);
 
 		} else {
 
-			self.json(results);
+			self.json(result);
 		}
 	});
 };
@@ -77,9 +52,9 @@ $.apiRegister = function() {
 
 	var email = self.body.email.toUpperCase();
 	var password = self.body.password;
-	var confirm = self.body.confirm;
+	var passwordConfirm = self.body.passwordConfirm;
 
-	common.ECRegister(self, email, password, confirm, function(results) {
+	common.ECRegister(self, email, password, passwordConfirm, function(results) {
 
 		if(results.error == true) {
 	

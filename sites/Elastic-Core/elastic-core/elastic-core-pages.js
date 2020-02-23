@@ -156,10 +156,10 @@ $.getRegister = {
 	uri: '/register',
 	controller: 'elastic-core/register.js',
 	flags: ['unauthorize'],
-	postFlags: ['unauthorize', 'post'],
 	label: 'Register',
 	views: [
 		{'body' : 'elastic-core/register.html'},
+		{'registerjs' : 'elastic-inventory/register.js'},
 		{'default' : 'elastic-core/default.html'}
 	],
 	above: [],

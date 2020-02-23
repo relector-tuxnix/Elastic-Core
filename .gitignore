@@ -1,9 +1,5 @@
-/elasticsearch*
-/elastic-search*
-/Elastic-Search*
-/sites/elastic-blog
-/sites/Elastic-Blog
-/sites/cloudboard
-/sites/Cloudboard
-/sites/boxmine
-/sites/Boxmine
+/sites/*
+!/sites/Elastic-Core
+/sites/Elastic-Core/tmp/*
+/live/*
+*.swp

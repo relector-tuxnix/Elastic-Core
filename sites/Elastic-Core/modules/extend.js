@@ -25,6 +25,8 @@ var definition = (function() {
 
 		var self = this;
 
+		console.log(`Fetching view: ${name}`);
+
 		var filename = utils.combine(CONF['directory-views'], name);
 
 		var tmp = '';

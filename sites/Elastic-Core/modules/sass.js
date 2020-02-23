@@ -39,8 +39,6 @@ exports.install = function() {
 
 	F.onCompileStyle = function(filename, content) {
 
-		var compiledSass = sass.renderSync({ file: filename, data: content, outputStyle: 'compressed' }).css.toString('utf8');
-
-		return css;
+		return sass.renderSync({ file: filename, data: content, outputStyle: 'compressed' }).css.toString('utf8');
 	};
 };

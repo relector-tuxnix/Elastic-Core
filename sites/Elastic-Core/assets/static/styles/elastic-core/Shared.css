@@ -1,0 +1,9 @@
+.message-list {
+	list-style: none;
+}
+
+	.message-list .default-item {
+		display: none !important;
+	}
+
+

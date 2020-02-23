@@ -1,4 +1,3 @@
-var F = require('total.js');
 var fs = require('fs');
 var hb = require('handlebars');
 var path = require('path');
@@ -49,9 +48,27 @@ $.ECSetupAuthentication = function() {
 
 	auth.onAuthorize = function(user, callback) {
 
-		$.ECQuery(`SELECT * FROM User WHERE email = ? LIMIT 1`, [user.id], function(result) {
+		var query = `
+			SELECT
+				Store._id,
+				Store._creationDate,
+				json_extract([value], '$.email') as email,
+				json_extract([value], '$.passwordHash') as passwordHash,
+				json_extract([value], '$.lockoutEnd') as lockoutEnd,
+				json_extract([value], '$.lockoutEnabled') as lockoutEnabled,
+				json_extract([value], '$.accessFailedCount') as accessFailedCount
+			FROM
+				Store, json_each(Store.[_data])
+			WHERE
+				Store.[_type] = 'user' 
+			AND 
+				json_extract([value], '$.email') = ?
+			LIMIT 1
+		`;
 
-			if(result.success == true) {
+		$.ECQuery(query, [user.id], function(result) {
+
+			if(result.message.length > 0) {
 
 				var storedUser = result.message.pop();
 
@@ -166,9 +183,11 @@ $.locale = function(keyword) {
 
 		filename = path.join(filename, CONF['default-language']);
 
-		filename = filename + '.json';
+		filename = `${filename}.json`;
 
 		if(fs.existsSync(filename) == true) {
+
+			console.log(`Found locale: ${filename}`);
 
 			var tmp = fs.readFileSync(filename, 'utf-8');
 
@@ -185,6 +204,8 @@ $.locale = function(keyword) {
 
 
 $.make = function(self, page) {
+
+	console.log("Making page...");
 
 	var out = "";
 
@@ -243,22 +264,55 @@ $.ECExecute = function(sql, params, callback) {
 };
 
 
-$.ECQuery = function(sql, params, callback) {
+/*
+ * Expects query that returns a column _data with valid JSON content.
+ */
+$.ECQueryJSON = function(sql, params, callback) {
 
-	console.log(`DOING QUERY: '${sql}' WITH PARAMATERS '${params}' `);
+	console.log(`DOING QUERY: '${sql}' WITH PARAMATERS '${params}'`);
 
 	db.conn.all(sql, params, (err, response) => {
 
 		if(err == null) {
 
-			if(response.length == 0) {
+			for(var i = 0, lenI = response.length; i < lenI; i++) {
 
-				callback({success: false, error: false, message: []});
+				var entry = response[i];
 
-			} else {
+				for(var key in entry) {
 
-				callback({success: true, error: false, message: response});
+					try {
+
+						entry[key] = JSON.parse(entry[key]);
+
+					} catch(e) {
+
+						//console.log(`Failed to parse data from store: ${e}`);
+					}
+				}
 			}
+
+			callback({success: true, error: false, message: response});
+
+		} else {
+
+			console.log(err);
+
+			callback({success: false, error: true, message: ["An error has occurred."]});
+		}
+	});
+};
+
+
+$.ECQuery = function(sql, params, callback) {
+
+	console.log(`DOING QUERY: '${sql}' WITH PARAMATERS '${params}'`);
+
+	db.conn.all(sql, params, (err, response) => {
+
+		if(err == null) {
+
+			callback({success: true, error: false, message: response});
 
 		} else {
 
@@ -276,96 +330,71 @@ $.ECQuery = function(sql, params, callback) {
  */
 $.ECGet = function(table, columns, where, range, order, limit, callback) {
 
-	var constraints = {
+	var allColumns = columns.join(', ');
 
-		"table": {
-			inclusion: [],
-			message: "^Not supported: %{value}"
-		},
-		"limit" : {
-			length: {
-				minimum: 0,
-				maximum: $.defaultLimit, 
-				tooShort: "Needs to have minimum %{count} limit or more.",
-				tooLong: "Needs to have maximum %{count} limit or less."
-			}
+	var conditions = [];
+
+	if(Array.isArray(range) && range.length == 3) {
+
+		var todayDate = new Date();
+		var today = helper.yyyymmdd(todayDate);
+		var weekRange = helper.weekRange(todayDate);		
+		var weekStart = weekRange.start;
+		var weekEnd = weekRange.end;
+		var monthRange = helper.monthRange(todayDate);		
+		var monthStart = monthRange.start;
+		var monthEnd = monthRange.end;
+
+		var column = range[0];
+		var from = range[1];
+		var to = range[2];
+
+		if(from == "today" || to == "today") {
+
+			from = `${today.yyyy}-${today.mm}-${today.dd} 00:00:00.0000`;
+			to = `${today.yyyy}-${today.mm}-${today.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+		} else if(from == "week" || to == "week") {
+
+			from = `${weekStart.yyyy}-${weekStart.mm}-${weekStart.dd} 00:00:00.0000`;
+			to = `${weekEnd.yyyy}-${weekEnd.mm}-${weekEnd.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
+
+		} else if(from == "month" || to == "month") {
+
+			from = `${monthStart.yyyy}-${monthStart.mm}-${monthStart.dd} 00:00:00.0000`;
+			to = `${monthEnd.yyyy}-${monthEnd.mm}-${monthEnd.dd} 23:59:59.9999`;
+
+			conditions.push(`${column} >= "${from}" AND ${column} < "${to}"`);
+
+		} else {
+
+			conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
 		}
-	};
-
-	var failed = $.validate({"table": table, "limit": limit}, constraints, {format: "flat"});
-
-	if(failed == undefined) {
-
-		var allColumns = columns.join(', ');
-
-		var conditions = [];
-
-		if(Array.isArray(range) && range.length == 3) {
-
-			var todayDate = new Date();
-			var today = helper.yyyymmdd(todayDate);
-			var weekRange = helper.weekRange(todayDate);		
-			var weekStart = weekRange.start;
-			var weekEnd = weekRange.end;
-			var monthRange = helper.monthRange(todayDate);		
-			var monthStart = monthRange.start;
-			var monthEnd = monthRange.end;
-
-			var column = range[0];
-			var from = range[1];
-			var to = range[2];
-
-			if(from == "today" || to == "today") {
-
-				from = `${today.yyyy}-${today.mm}-${today.dd} 00:00:00.0000`;
-				to = `${today.yyyy}-${today.mm}-${today.dd} 23:59:59.9999`;
-
-				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
-
-			} else if(from == "week" || to == "week") {
-
-				from = `${weekStart.yyyy}-${weekStart.mm}-${weekStart.dd} 00:00:00.0000`;
-				to = `${weekEnd.yyyy}-${weekEnd.mm}-${weekEnd.dd} 23:59:59.9999`;
-
-				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
-
-			} else if(from == "month" || to == "month") {
-
-				from = `${monthStart.yyyy}-${monthStart.mm}-${monthStart.dd} 00:00:00.0000`;
-				to = `${monthEnd.yyyy}-${monthEnd.mm}-${monthEnd.dd} 23:59:59.9999`;
-
-				conditions.push(`${column} >= "${from}" AND ${column} < "${to}"`);
-
-			} else {
-
-				conditions.push(`${column} >= "${from}" AND ${column} <= "${to}"`);
-			}
-		}
-
-		if(Array.isArray(where) && where.length != 0) {
-
-			for(var i = 0; i < where.length; i++) {
-
-				conditions.push(where[i]);
-			}
-		}
-
-		var allConditions = `WHERE ${conditions.join(' AND ')}`;
-
-		if(Array.isArray(order) && order.length == 2) {
-
-			var column = order[0];	
-			var direction = order[1];
-
-			allConditions += ` ORDER BY ${column} ${direction}`
-		}
-
-		$.ECQuery(`SELECT ${allColumns} FROM ${table} ${allConditions} LIMIT ${limit}`, callback);
-
-	} else {
-
-		callback({success: false, error: true, message: failed});
 	}
+
+	if(Array.isArray(where) && where.length != 0) {
+
+		for(var i = 0; i < where.length; i++) {
+
+			conditions.push(where[i]);
+		}
+	}
+
+	var allConditions = `WHERE ${conditions.join(' AND ')}`;
+
+	if(Array.isArray(order) && order.length == 2) {
+
+		var column = order[0];	
+		var direction = order[1];
+
+		allConditions += ` ORDER BY ${column} ${direction}`
+	}
+
+	$.ECQuery(`SELECT ${allColumns} FROM ${table} ${allConditions} LIMIT ${limit}`, [], callback);
 };
 
 
@@ -430,26 +459,26 @@ $.ECLogout = function(self) {
 };
 
 
-$.ECRegister = function(self, email, password, confirm, callback) {
+$.ECRegister = function(self, email, password, passwordConfirm, callback) {
 
 	var auth = MODULE('auth');
 
 	var email = self.body.email.toUpperCase();
 	var password = self.body.password;
-	var confirm = self.body.confirm;
+	var passwordConfirm = self.body.passwordConfirm;
 
 	var constraints = {
-		"email": {
+		email : {
 			presence: true,
 	  		email: true,
 		},
-		"password": {
+		password : {
 			presence: true,
 	  		length: {
 				minimum: 5
 	  		}
 	  	},
-	  	"confirm": {
+	  	passwordConfirm : {
 			presence: true,
 			equality: {
 				attribute: "password",
@@ -458,7 +487,11 @@ $.ECRegister = function(self, email, password, confirm, callback) {
 		}
 	};
 
-	var failed = $.validate({"email": email, "password": password, "confirm": confirm}, constraints, {format: "flat"});
+	var failed = $.validate({
+		email : email, 
+		password : password,
+		passwordConfirm : passwordConfirm
+	}, constraints, {format: "flat"});
 
 	if(failed == undefined) {
 

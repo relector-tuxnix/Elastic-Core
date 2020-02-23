@@ -7,7 +7,7 @@ etag_version               	:
 directory_contents			: /assets/
 directory_controllers		: /controllers/
 directory-views            	: /assets/views/
-directory_locale			: /assets/locale/
+directory-locale			: /assets/locale/
 directory_temp				: /tmp/
 directory_resources         : /assets/resources/
 directory_public            : /assets/static/
@@ -28,3 +28,4 @@ default-item-limit			: 50
 default_theme				: elastic-core
 max-file-size				: 104857600
 default_database			: ElasticCore.sqlite
+allow_compile				: false
