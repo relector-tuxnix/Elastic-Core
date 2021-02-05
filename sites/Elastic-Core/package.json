@@ -11,7 +11,7 @@
     "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
     "sqlite3": "^4.1.1",
-    "total.js": "^3.3.2",
+    "total.js": "^3.4.7",
     "validate.js": "^0.13.1"
   },
   "devDependencies": {},
