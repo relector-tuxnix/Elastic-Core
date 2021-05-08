@@ -6,7 +6,7 @@
   "dependencies": {
     "bcrypt": "^3.0.7",
     "cuid": "^2.1.8",
-    "handlebars": "^4.7.2",
+    "handlebars": "^4.7.7",
     "handlebars-form-helpers": "^0.1.4",
     "lodash": "^4.17.15",
     "node-sass": "^4.13.1",
