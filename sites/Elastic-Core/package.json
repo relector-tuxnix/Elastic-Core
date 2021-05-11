@@ -8,7 +8,7 @@
     "cuid": "^2.1.8",
     "handlebars": "^4.7.2",
     "handlebars-form-helpers": "^0.1.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "node-sass": "^4.13.1",
     "sqlite3": "^4.1.1",
     "total.js": "^3.3.2",
