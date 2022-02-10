@@ -9,7 +9,7 @@
     "handlebars": "^4.7.2",
     "handlebars-form-helpers": "^0.1.4",
     "lodash": "^4.17.15",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "sqlite3": "^4.1.1",
     "total.js": "^3.3.2",
     "validate.js": "^0.13.1"
